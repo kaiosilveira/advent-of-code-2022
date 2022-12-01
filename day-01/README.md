@@ -4,6 +4,8 @@ Challenge URL: https://adventofcode.com/2022/day/1
 
 ## Part 1: Calorie Counting
 
+### Description
+
 Santa's reindeer typically eat regular reindeer food, but they need a lot of magical energy to deliver presents on Christmas. For that, their favorite snack is a special type of star fruit that only grows deep in the jungle. The Elves have brought you on their annual expedition to the grove where the fruit grows.
 
 To supply enough magical energy, the expedition needs to retrieve a minimum of fifty stars by December 25th. Although the Elves assure you that the grove has plenty of fruit, you decide to grab any fruit you see along the way, just in case.
@@ -44,6 +46,34 @@ This list represents the Calories of the food carried by five Elves:
 In case the Elves get hungry and need extra snacks, they need to know which Elf to ask: they'd like to know how many Calories are being carried by the Elf carrying the most Calories. In the example above, this is 24000 (carried by the fourth Elf).
 
 Find the Elf carrying the most Calories. How many total Calories is that Elf carrying?
+
+### Solution
+
+```rust
+pub fn find_the_elf_carrying_most_calories(report_data: Vec<&str>, take_top_n: usize) -> i32 {
+    if report_data.is_empty() {
+        return 0;
+    }
+
+    let mut total_calorie_aggregator: Vec<i32> = vec![];
+    for group in create_report_groups(&report_data) {
+        let partial = reduce(group);
+        total_calorie_aggregator.push(partial);
+    }
+
+    total_calorie_aggregator.sort();
+    total_calorie_aggregator.reverse();
+
+    let top_n = &total_calorie_aggregator[0..take_top_n];
+
+    let mut total = 0;
+    for i in top_n {
+        total += i;
+    }
+
+    total
+}
+```
 
 ## Part 2: Top three
 
