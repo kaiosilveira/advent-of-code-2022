@@ -12,6 +12,6 @@ To be defined
 
 ## Solutions
 
-| day | implementation             |
-| --- | -------------------------- |
-| #1  | [here](./day-01/README.md) |
+| day | implementation   |
+| --- | ---------------- |
+| #1  | [here](./day-01) |
