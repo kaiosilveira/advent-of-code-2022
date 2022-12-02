@@ -27,7 +27,7 @@ impl RockPaperScissorsRealStrategy {
     pub fn get_winner(&self) -> RoundWinner {
         match self.expected_result {
             RoundResult::DRAW => RoundWinner::NONE,
-            RoundResult::WIN => RoundWinner::YOU,
+            RoundResult::WIN => RoundWinner::USER,
             RoundResult::LOSS => RoundWinner::OPPONENT,
         }
     }
@@ -200,7 +200,7 @@ mod rock_paper_scissors_real_strategy_tests {
                 opponents_play: HandShape::PAPER,
             };
 
-            assert_eq!(RoundWinner::YOU, round.get_winner());
+            assert_eq!(RoundWinner::USER, round.get_winner());
         }
 
         #[test]

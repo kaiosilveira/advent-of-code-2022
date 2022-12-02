@@ -33,10 +33,10 @@ fn run_guessed_strategy(contents: &Vec<&str>) {
 
         println!(
             "Opponent: {:?} | You: {:?} | Winner: {:?} | Symbol points: {} | Total points: {}",
-            round.opponents_play,
-            round.user_play,
+            round.opponent_hand_shape,
+            round.user_hand_shape,
             round.get_winner(),
-            round.user_play.get_points(),
+            round.user_hand_shape.get_points(),
             round.get_total_points()
         );
 
