@@ -33,7 +33,238 @@ This strategy guide predicts and recommends the following:
 
 **What would your total score be if everything goes exactly according to your strategy guide?**
 
-### Solution
+<details>
+<summary>See solution</summary>
+We can start solving this problem by modeling the structure of the Rock Paper Scissors game. A central piece of it is the hand shape each player can choose. The options are well-known and we can model them all as an enum:
+
+```rust
+enum HandShape {
+    ROCK,
+    PAPER,
+    SCISSORS,
+}
+```
+
+Then, we can start adding behavior to this enum (yes, Rust allows us to do that). We can first add information about which hand shape defeats the other one. This is as simple as:
+
+```rust
+#[derive(Copy, Clone, Debug, PartialEq)]
+impl HandShape {
+    // -- snip --
+    pub fn get_defeated(&self) -> HandShape {
+        match self {
+            HandShape::ROCK => HandShape::SCISSORS,
+            HandShape::PAPER => HandShape::ROCK,
+            HandShape::SCISSORS => HandShape::PAPER,
+        }
+    }
+}
+
+// -- snip --
+#[cfg(test)]
+mod hand_shape_tests {
+    // -- snip --
+    #[test]
+    fn should_return_the_shape_which_defeats_it() {
+        let rock = HandShape::ROCK;
+        let paper = HandShape::PAPER;
+        let scissors = HandShape::SCISSORS;
+
+        assert_eq!(HandShape::PAPER, rock.get_defeater());
+        assert_eq!(HandShape::SCISSORS, paper.get_defeater());
+        assert_eq!(HandShape::ROCK, scissors.get_defeater());
+    }
+}
+```
+
+By the same token, we can add a method to get information about which hand shape defeats the current shape:
+
+```rust
+impl HandShape {
+    // -- snip --
+    pub fn get_defeater(&self) -> HandShape {
+        match self {
+            HandShape::ROCK => HandShape::PAPER,
+            HandShape::PAPER => HandShape::SCISSORS,
+            HandShape::SCISSORS => HandShape::ROCK,
+        }
+    }
+}
+
+// -- snip --
+
+#[cfg(test)]
+mod hand_shape_tests {
+    // -- snip --
+    #[test]
+    fn should_return_the_shape_which_it_defeats() {
+        let rock = HandShape::ROCK;
+        let paper = HandShape::PAPER;
+        let scissors = HandShape::SCISSORS;
+
+        assert_eq!(HandShape::SCISSORS, rock.get_defeated());
+        assert_eq!(HandShape::ROCK, paper.get_defeated());
+        assert_eq!(HandShape::PAPER, scissors.get_defeated());
+    }
+}
+```
+
+As the challenge describes, we also need to store information about how many points a player can get by choosing a specific shape. This logic is implemented below:
+
+```rust
+impl HandShape {
+  // -- snip --
+    pub fn get_points(&self) -> i32 {
+        match self {
+            HandShape::ROCK => 1,
+            HandShape::PAPER => 2,
+            HandShape::SCISSORS => 3,
+        }
+    }
+}
+
+// -- snip --
+
+#[cfg(test)]
+mod hand_shape_tests {
+// -- snip --
+    #[test]
+    fn should_return_1_if_it_is_a_rock_shape() {
+        assert_eq!(1, HandShape::ROCK.get_points());
+    }
+
+    #[test]
+    fn should_return_2_if_it_is_a_paper_shape() {
+        assert_eq!(2, HandShape::PAPER.get_points());
+    }
+
+    #[test]
+    fn should_return_2_if_it_is_a_scissors_shape() {
+        assert_eq!(3, HandShape::SCISSORS.get_points());
+    }
+}
+```
+
+With the `HandShape` logic in place, we can start worrying about battles. We can introduce the concept of rounds, where each round is a hand shape against the other. Following this logic, we can implement a `RoundResult` enum, which (as the name strongly suggests) holds information about the result of a battle round:
+
+```rust
+pub enum RoundResult {
+    WIN,
+    LOSS,
+    DRAW,
+}
+```
+
+With this, we can now implement a method in `HandShape` to process a battle against another shape:
+
+```rust
+impl HandShape {
+  // -- snip --
+    pub fn against(&self, other: HandShape) -> RoundResult {
+        if self.get_defeated() == other {
+            RoundResult::WIN
+        } else if self.get_defeater() == other {
+            RoundResult::LOSS
+        } else {
+            RoundResult::DRAW
+        }
+    }
+}
+```
+
+_Note: There are many tests for this method because of all possible permutations, so they'll be excluded from this text. You can find them all in the source code._
+
+That's all for the core functionality of the game. Now that it is fully modeled, we can start implementing the logic of processing a battle round, collecting information about the winner and computing the total number of points of a round.
+
+Let's start by implementing an enum to hold information about the winner. It is as simple as:
+
+```rust
+pub enum RoundWinner {
+    USER,
+    OPPONENT,
+    NONE,
+}
+```
+
+Next, let's create a struct that will hold the information about the hand shapes that both the user and their opponent played:
+
+```rust
+pub struct RockPaperScissorsGuessedStrategy {
+    pub user_hand_shape: HandShape,
+    pub opponent_hand_shape: HandShape,
+}
+
+impl RockPaperScissorsGuessedStrategy {
+    pub fn build(
+        opponent_hand_shape: HandShape,
+        user_hand_shape: HandShape,
+    ) -> RockPaperScissorsGuessedStrategy {
+        RockPaperScissorsGuessedStrategy {
+            opponent_hand_shape,
+            user_hand_shape,
+        }
+    }
+}
+```
+
+Now, by using the `HandShape` and `RoundWinner` enums, we can easily compute the winner of a round:
+
+```rust
+impl RockPaperScissorsGuessedStrategy {
+    // -- snip --
+    pub fn get_winner(&self) -> RoundWinner {
+        match self.get_round_result() {
+            RoundResult::DRAW => RoundWinner::NONE,
+            RoundResult::WIN => RoundWinner::USER,
+            RoundResult::LOSS => RoundWinner::OPPONENT,
+        }
+    }
+}
+
+#[cfg(test)]
+mod guessed_strategy_tests {
+    // -- snip
+    #[test]
+    fn should_return_the_correct_winner() {
+        let opponent_hand_shape = HandShape::ROCK;
+        let user_hand_shape = HandShape::PAPER;
+        let round =
+            RockPaperScissorsGuessedStrategy::build(opponent_hand_shape, user_hand_shape);
+
+        assert_eq!(RoundWinner::USER, round.get_winner());
+    }
+}
+```
+
+We also need to compute the total points of a round:
+
+```rust
+impl RockPaperScissorsGuessedStrategy {
+    // -- snip --
+    pub fn get_total_points(&self) -> i32 {
+        let symbol_points = self.user_hand_shape.get_points();
+        let round_points = self.get_round_result().get_points();
+
+        symbol_points + round_points
+    }
+}
+
+#[cfg(test)]
+mod guessed_strategy_tests {
+    // -- snip --
+    #[test]
+    fn should_return_the_correct_number_of_points_for_a_win_with_paper() {
+        let opponent_hand_shape = HandShape::ROCK;
+        let user_hand_shape = HandShape::PAPER;
+        let round =
+            RockPaperScissorsGuessedStrategy::build(opponent_hand_shape, user_hand_shape);
+
+        assert_eq!(8, round.get_total_points());
+    }
+}
+```
+
+</details>
 
 ## Part two: Oops
 
