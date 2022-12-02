@@ -16,3 +16,4 @@ To be defined
 | day | implementation   |
 | --- | ---------------- |
 | #1  | [here](./day-01) |
+| #2  | [here](./day-02) |
