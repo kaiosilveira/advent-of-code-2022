@@ -37,4 +37,34 @@ impl RockPaperScissorsGuessedStrategy {
 }
 
 #[cfg(test)]
-mod guessed_strategy_tests {}
+mod guessed_strategy_tests {
+    use super::*;
+
+    mod get_winner {
+        use super::*;
+
+        #[test]
+        fn should_return_the_correct_winner() {
+            let opponent_hand_shape = HandShape::ROCK;
+            let user_hand_shape = HandShape::PAPER;
+            let round =
+                RockPaperScissorsGuessedStrategy::build(opponent_hand_shape, user_hand_shape);
+
+            assert_eq!(RoundWinner::YOU, round.get_winner());
+        }
+    }
+
+    mod get_total_points {
+        use super::*;
+
+        #[test]
+        fn should_return_the_correct_number_of_points_for_a_win_with_paper() {
+            let opponent_hand_shape = HandShape::ROCK;
+            let user_hand_shape = HandShape::PAPER;
+            let round =
+                RockPaperScissorsGuessedStrategy::build(opponent_hand_shape, user_hand_shape);
+
+            assert_eq!(8, round.get_total_points());
+        }
+    }
+}
