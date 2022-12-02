@@ -18,17 +18,17 @@ fn run_guessed_strategy(contents: &Vec<&str>) {
 
     for line in contents {
         let round_info: Vec<&str> = line.split(" ").collect();
-        let opponents_play = round_info
+        let opponent_hand_shape = round_info
             .get(0)
             .expect("should be able to find the opponent's play");
 
-        let user_play = round_info
+        let user_hand_shape = round_info
             .get(1)
             .expect("should be able to find the user play");
 
         let round = RockPaperScissorsGuessedStrategy::build(
-            letter_to_symbol(opponents_play),
-            letter_to_symbol(user_play),
+            letter_to_symbol(opponent_hand_shape),
+            letter_to_symbol(user_hand_shape),
         );
 
         println!(
