@@ -1,6 +1,6 @@
 #[derive(Debug, PartialEq)]
 pub enum RoundWinner {
-    YOU,
+    USER,
     OPPONENT,
     NONE,
 }
