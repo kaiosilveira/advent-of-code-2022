@@ -1,5 +1,7 @@
 # Advent of code 2022: Day 02
 
+Challenge URL: https://adventofcode.com/2022/day/2
+
 ## Part one: Rock Paper Scissors
 
 The Elves begin to set up camp on the beach. To decide whose tent gets to be closest to the snack storage, a giant Rock Paper Scissors tournament is already in progress.
