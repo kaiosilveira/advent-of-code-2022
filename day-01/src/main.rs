@@ -1,3 +1,4 @@
+use day_01::*;
 use std::fs;
 
 fn main() {
@@ -6,7 +7,7 @@ fn main() {
 
     let take_top_n = 3;
 
-    let max_calories = day_01::find_the_elf_carrying_most_calories(report_data, take_top_n);
+    let max_calories = find_top_n_elves_carrying_more_calories(report_data, take_top_n);
 
     println!("The max calories are {}", max_calories);
 }

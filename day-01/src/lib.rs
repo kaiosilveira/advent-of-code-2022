@@ -10,7 +10,11 @@ fn create_report_groups(calorie_report: &Vec<&str>) -> Vec<Vec<i32>> {
             groups.push(group.clone());
             group = vec![];
         } else {
-            group.push(entry.parse::<i32>().unwrap());
+            group.push(
+                entry
+                    .parse::<i32>()
+                    .expect("Should be able to parse an entry to i32"),
+            );
         }
     }
 
@@ -27,7 +31,7 @@ fn reduce(arr: Vec<i32>) -> i32 {
     partial
 }
 
-pub fn find_the_elf_carrying_most_calories(report_data: Vec<&str>, take_top_n: usize) -> i32 {
+pub fn find_top_n_elves_carrying_more_calories(report_data: Vec<&str>, take_top_n: usize) -> i32 {
     if report_data.is_empty() {
         return 0;
     }
@@ -62,7 +66,7 @@ mod tests {
 
         assert_eq!(
             0,
-            find_the_elf_carrying_most_calories(report_data, take_top_n)
+            find_top_n_elves_carrying_more_calories(report_data, take_top_n)
         );
     }
 
@@ -73,7 +77,7 @@ mod tests {
 
         assert_eq!(
             1000,
-            find_the_elf_carrying_most_calories(report_data, take_top_n)
+            find_top_n_elves_carrying_more_calories(report_data, take_top_n)
         );
     }
 
@@ -84,7 +88,7 @@ mod tests {
 
         assert_eq!(
             3000,
-            find_the_elf_carrying_most_calories(report_data, take_top_n)
+            find_top_n_elves_carrying_more_calories(report_data, take_top_n)
         );
     }
 
@@ -95,7 +99,7 @@ mod tests {
 
         assert_eq!(
             3000,
-            find_the_elf_carrying_most_calories(report_data, take_top_n)
+            find_top_n_elves_carrying_more_calories(report_data, take_top_n)
         );
     }
 
@@ -108,7 +112,7 @@ mod tests {
 
         assert_eq!(
             4200,
-            find_the_elf_carrying_most_calories(report_data, take_top_n)
+            find_top_n_elves_carrying_more_calories(report_data, take_top_n)
         );
     }
 }
