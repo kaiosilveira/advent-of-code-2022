@@ -13,7 +13,7 @@ To be defined
 
 ## Solutions
 
-| day | implementation   |
-| --- | ---------------- |
-| #1  | [here](./day-01) |
-| #2  | [here](./day-02) |
+| day | description           | implementation   |
+| --- | --------------------- | ---------------- |
+| #1  | Calorie counting      | [here](./day-01) |
+| #2  | Rock, paper, scissors | [here](./day-02) |
