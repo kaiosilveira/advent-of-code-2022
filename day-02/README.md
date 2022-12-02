@@ -212,6 +212,10 @@ Now, by using the `HandShape` and `RoundWinner` enums, we can easily compute the
 ```rust
 impl RockPaperScissorsGuessedStrategy {
     // -- snip --
+    fn get_round_result(&self) -> RoundResult {
+        self.user_hand_shape.against(self.opponent_hand_shape)
+    }
+
     pub fn get_winner(&self) -> RoundWinner {
         match self.get_round_result() {
             RoundResult::DRAW => RoundWinner::NONE,
@@ -263,6 +267,43 @@ mod guessed_strategy_tests {
     }
 }
 ```
+
+And that's it! Now we just need to add boilerplate code to load the input file, parse the arguments and aggregate the results for all of the rounds considered in the strategy.
+
+```rust
+fn main() {
+    let contents = fs::read_to_string("sample.txt").expect("should be able to read the input file");
+    let contents: Vec<&str> = contents.lines().collect();
+
+    run_guessed_strategy(&contents);
+}
+
+fn run_guessed_strategy(contents: &Vec<&str>) {
+    let mut total_score = 0;
+
+    for line in contents {
+        let round_info: Vec<&str> = line.split(" ").collect();
+        let opponent_hand_shape = round_info
+            .get(0)
+            .expect("should be able to find the opponent's play");
+
+        let user_hand_shape = round_info
+            .get(1)
+            .expect("should be able to find the user play");
+
+        let round = RockPaperScissorsGuessedStrategy::build(
+            letter_to_symbol(opponent_hand_shape),
+            letter_to_symbol(user_hand_shape),
+        );
+
+        total_score += round.get_total_points();
+    }
+
+    println!("Total score for the whole strategy is {}", total_score);
+}
+```
+
+That's all!
 
 </details>
 
