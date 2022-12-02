@@ -1,4 +1,6 @@
-use day_02::strategies::rock_paper_scissors_real_strategy::*;
+use day_02::strategies::{
+    rock_paper_scissors_guessed_strategy::*, rock_paper_scissors_real_strategy::*,
+};
 use day_02::utils::{letter_to_suggested_result::*, letter_to_symbol::*};
 use std::fs;
 
@@ -7,6 +9,41 @@ fn main() {
     let contents: Vec<&str> = contents.lines().collect();
 
     run_real_strategy(&contents);
+    println!("-------------------");
+    run_guessed_strategy(&contents);
+}
+
+fn run_guessed_strategy(contents: &Vec<&str>) {
+    let mut total_score = 0;
+
+    for line in contents {
+        let round_info: Vec<&str> = line.split(" ").collect();
+        let opponents_play = round_info
+            .get(0)
+            .expect("should be able to find the opponent's play");
+
+        let user_play = round_info
+            .get(1)
+            .expect("should be able to find the user play");
+
+        let round = RockPaperScissorsGuessedStrategy::build(
+            letter_to_symbol(opponents_play),
+            letter_to_symbol(user_play),
+        );
+
+        println!(
+            "Opponent: {:?} | You: {:?} | Winner: {:?} | Symbol points: {} | Total points: {}",
+            round.opponents_play,
+            round.user_play,
+            round.get_winner(),
+            round.user_play.get_points(),
+            round.get_total_points()
+        );
+
+        total_score += round.get_total_points();
+    }
+
+    println!("Total score for the whole strategy is {}", total_score);
 }
 
 fn run_real_strategy(contents: &Vec<&str>) {
