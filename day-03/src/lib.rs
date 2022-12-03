@@ -4,10 +4,7 @@ pub fn part_1(contents: &Vec<&str>) -> usize {
     let mut total = 0;
 
     for line in contents {
-        let line_length = line.len();
-        let middle = line_length / 2;
-        let first_part: &str = &line[..middle];
-        let second_part: &str = &line[middle..line_length];
+        let (first_part, second_part) = split_item_list_into_two_compartments(line);
 
         let mut shared_item: char = '0';
         for c in first_part.chars() {
@@ -78,6 +75,15 @@ pub fn get_char_priority(c: char) -> usize {
         + 1
 }
 
+pub fn split_item_list_into_two_compartments(item_list: &str) -> (&str, &str) {
+    let length = item_list.len();
+    let middle = length / 2;
+    let first_part: &str = &item_list[..middle];
+    let second_part: &str = &item_list[middle..length];
+
+    (first_part, second_part)
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -129,6 +135,20 @@ mod tests {
         #[test]
         fn should_return_the_correct_priority_for_uppercase_a() {
             assert_eq!(27, get_char_priority('A'));
+        }
+    }
+
+    mod split_item_list_into_two_compartments {
+        use super::*;
+
+        #[test]
+        fn should_split_the_item_list_into_two_compartments() {
+            let item_list = "vJrwpWtwJgWrhcsFMMfFFhFp";
+
+            let (first_part, second_part) = split_item_list_into_two_compartments(item_list);
+
+            assert_eq!("vJrwpWtwJgWr", first_part);
+            assert_eq!("hcsFMMfFFhFp", second_part);
         }
     }
 }
