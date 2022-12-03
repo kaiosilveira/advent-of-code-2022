@@ -38,6 +38,131 @@ In the above example, the priority of the item type that appears in both compart
 
 Find the item type that appears in both compartments of each rucksack. **What is the sum of the priorities of those item types?**
 
+<details>
+<summary><strong>See solution</strong></summary>
+
+The first thing we need to do to solve this problem is to split the list of item types into two compartments, to match what's described above. As the list of item types is described in a single string, we can do this split by following these steps:
+
+- Finding the length of the string:
+
+```rust
+let length = item_list.len();
+```
+
+- Finding the index that represents the middle of the string:
+
+```rust
+let middle = length / 2;
+```
+
+- Isolating the first part and the second part:
+
+```rust
+let first_part: &str = &item_list[..middle];
+let second_part: &str = &item_list[middle..length];
+```
+
+_Note: We are using ranges to split the string into two parts, where `item_list[..middle]` means "take everything from the start of the string up to the value of `middle`, and `item_list[middle..length]` means "take everything from the middle of the string up to its end`_
+
+The resulting function for splitting the item type list into two compartments looks like:
+
+```rust
+pub fn split_item_list_into_two_compartments(item_list: &str) -> (&str, &str) {
+    let length = item_list.len();
+    let middle = length / 2;
+    let first_part: &str = &item_list[..middle];
+    let second_part: &str = &item_list[middle..length];
+
+    (first_part, second_part)
+}
+```
+
+Next up, we need to find the shared item type between the two compartments. As now we have two strings, each of them representing a list of item types contained in a compartment. We can simply iterate over the first list and check whether or not the second list contains a given item. As soon as we find the item, we can exit the loop and say that we have found it! We need to be careful, though: what will the code return if we don't find any match? Thankfully, Rust has the `Option<T>` construct, which allows us to return either `Some(value)` or `None`, and let the calling code decide what to do with that (we'll be back to the caller implementation and revisit this case later). The code looks like this:
+
+```rust
+pub fn find_shared_item_type_between(
+    first_compartment: &str,
+    second_compartment: &str,
+) -> Option<char> {
+    let mut result: Option<char> = None;
+
+    for item_type in first_compartment.chars() {
+        if second_compartment.contains(item_type) {
+            result = Some(item_type);
+        };
+    }
+
+    result
+}
+```
+
+Finally, the next part is to calculate the priority of the shared item type. As the challenge describes, each character has the priority of its corresponding position in the alphabet, starting with the lowercase chars, followed by the uppercase chars. We will use a `const` string to represent this rule:
+
+```rust
+const CHAR_PRIORITY_LOOKUP: &str = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+```
+
+Then, we can implement a function to find an item's index inside the lookup string, and add a `+1` to it, as indexes are zero-based:
+
+```rust
+pub fn get_char_priority(c: char) -> usize {
+    CHAR_PRIORITY_LOOKUP
+        .find(c)
+        .expect("should be able to find the badge char in the lookup table")
+        + 1
+}
+```
+
+_Note: The `.find` method returns an `Option<T>`, containing the index of the char in the string in case it exists, and `None` otherwise, similar to what we've discussed above. We're using the `.expect` here to cause the program to panic in case we don't find the expected index for a char._
+
+That's all we need! We can glue all these parts together with a function:
+
+```rust
+pub fn get_total_sum_of_shared_item_priorities(contents: &Vec<&str>) -> usize {
+    let mut total = 0;
+
+    for line in contents {
+        let (first_compartment, second_compartment) = split_item_list_into_two_compartments(line);
+        let shared_item_type = find_shared_item_type_between(first_compartment, second_compartment)
+            .expect("Failed to find a shared item type");
+
+        let item_priority = get_char_priority(shared_item_type);
+
+        total += item_priority;
+    }
+
+    total
+}
+```
+
+_Note: notice how we are using a `.expect` when calling `find_shared_item_type_between`, that's for the exact same reason as we did it for the `.find` method above: causing a panic if we don't find what we expect_
+
+The `contents` argument represents a vector of lists of item types, so it should look like this:
+
+```rust
+let contents = vec![
+  "vJrwpWtwJgWrhcsFMMfFFhFp",
+  "jqHRNqRjqzjGDLGLrsFMfFZSrLrFZsSL",
+  "PmmdzqPrVvPwwTWBwg"
+];
+```
+
+Now we just need to implement the boilerplate code to load the file at `main` and feed the data into our function:
+
+```rust
+fn main() {
+    let contents = fs::read_to_string("sample.txt").expect("should be able to read the file");
+    let contents: Vec<&str> = contents.lines().collect();
+    println!("Part 1: {}", get_total_sum_of_shared_item_priorities(&contents)); // Part 1: 157
+}
+```
+
+And that's it for part 1!
+
+</details>
+
+---
+
 ## Part 02: groping by badge type
 
 As you finish identifying the misplaced items, the Elves come to you with another issue.
@@ -69,3 +194,9 @@ In the first group, the only item type that appears in all three rucksacks is lo
 Priorities for these items must still be found to organize the sticker attachment efforts: here, they are 18 (r) for the first group and 52 (Z) for the second group. The sum of these is 70.
 
 Find the item type that corresponds to the badges of each three-Elf group. **What is the sum of the priorities of those item types?**
+
+<details>
+<summary><strong>See solution</strong></summary>
+</details>
+
+---
