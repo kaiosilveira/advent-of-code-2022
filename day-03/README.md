@@ -163,7 +163,7 @@ And that's it for part 1!
 
 ---
 
-## Part 02: groping by badge type
+## Part 02: Grouping by badge type
 
 As you finish identifying the misplaced items, the Elves come to you with another issue.
 
