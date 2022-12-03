@@ -4,17 +4,9 @@ pub fn part_1(contents: &Vec<&str>) -> usize {
     let mut total = 0;
 
     for line in contents {
-        let (first_part, second_part) = split_item_list_into_two_compartments(line);
-
-        let mut shared_item: char = '0';
-        for c in first_part.chars() {
-            if second_part.contains(c) {
-                shared_item = c;
-                break;
-            };
-        }
-
-        let item_priority = get_char_priority(shared_item);
+        let (first_compartment, second_compartment) = split_item_list_into_two_compartments(line);
+        let shared_item_type = find_shared_item_type_between(first_compartment, second_compartment);
+        let item_priority = get_char_priority(shared_item_type);
 
         total += item_priority;
     }
@@ -84,6 +76,19 @@ pub fn split_item_list_into_two_compartments(item_list: &str) -> (&str, &str) {
     (first_part, second_part)
 }
 
+pub fn find_shared_item_type_between(first_compartment: &str, second_compartment: &str) -> char {
+    let mut shared_item_type: char = '0';
+
+    for item_type in first_compartment.chars() {
+        if second_compartment.contains(item_type) {
+            shared_item_type = item_type;
+            break;
+        };
+    }
+
+    shared_item_type
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -149,6 +154,18 @@ mod tests {
 
             assert_eq!("vJrwpWtwJgWr", first_part);
             assert_eq!("hcsFMMfFFhFp", second_part);
+        }
+    }
+
+    mod find_shared_item_type_between {
+        use super::*;
+
+        #[test]
+        fn should_find_the_shared_char_between_two_strings() {
+            let first_str = "vJrwpWtwJgWr";
+            let second_str = "hcsFMMfFFhFp";
+
+            assert_eq!('p', find_shared_item_type_between(first_str, second_str));
         }
     }
 }
