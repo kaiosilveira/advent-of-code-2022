@@ -1,37 +1,31 @@
 const CHAR_PRIORITY_LOOKUP: &str = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
-pub fn part_1(contents: Vec<&str>) -> usize {
+pub fn part_1(contents: &Vec<&str>) -> usize {
     let mut total = 0;
+
     for line in contents {
         let line_length = line.len();
         let middle = line_length / 2;
         let first_part: &str = &line[..middle];
         let second_part: &str = &line[middle..line_length];
-        println!("first_part: {} | second_part: {}", first_part, second_part);
 
         let mut shared_item: char = '0';
         for c in first_part.chars() {
             if second_part.contains(c) {
                 shared_item = c;
+                break;
             };
         }
 
-        let item_priority = CHAR_PRIORITY_LOOKUP
-            .find(shared_item)
-            .expect("Should be able to find the char in the alphabet")
-            + 1;
-
-        println!("Shared char: {} [{}]", shared_item, item_priority);
+        let item_priority = get_char_priority(shared_item);
 
         total += item_priority;
     }
 
-    println!("Sum: {}", total);
-
     total
 }
 
-pub fn part_2(contents: Vec<&str>) -> usize {
+pub fn part_2(contents: &Vec<&str>) -> usize {
     let mut groups: Vec<Vec<&str>> = vec![];
 
     let mut group: Vec<&str> = vec![];
@@ -65,6 +59,7 @@ pub fn part_2(contents: Vec<&str>) -> usize {
         for char in first_item_list.chars() {
             if second_item_list.contains(char) && third_item_list.contains(char) {
                 badge_char = char;
+                break;
             }
         }
 
@@ -72,8 +67,6 @@ pub fn part_2(contents: Vec<&str>) -> usize {
 
         total += priority;
     }
-
-    println!("The sum of the priorities of badge items are {}", total);
 
     total
 }
@@ -103,7 +96,7 @@ mod tests {
                 "CrZsJsPPZsGzwwsLwLmpwMDw",
             ];
 
-            assert_eq!(157, part_1(contents));
+            assert_eq!(157, part_1(&contents));
         }
     }
 
@@ -121,7 +114,7 @@ mod tests {
                 "CrZsJsPPZsGzwwsLwLmpwMDw",
             ];
 
-            assert_eq!(70, part_2(contents));
+            assert_eq!(70, part_2(&contents));
         }
     }
 
