@@ -1,6 +1,6 @@
 const CHAR_PRIORITY_LOOKUP: &str = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
-pub fn part_1(contents: &Vec<&str>) -> usize {
+pub fn get_total_sum_of_shared_item_priorities(contents: &Vec<&str>) -> usize {
     let mut total = 0;
 
     for line in contents {
@@ -93,11 +93,17 @@ pub fn find_shared_item_type_between(first_compartment: &str, second_compartment
 mod tests {
     use super::*;
 
-    mod part_01 {
+    mod get_total_sum_of_shared_item_priorities {
         use super::*;
 
         #[test]
         fn should_return_the_correct_sum_of_priorities() {
+            /*
+              The input below is extracted from the example shared in the challenge description.
+
+              157 is a magic number here, as it is the sum of the shared item's priorities described by the challenge for the input below.
+            */
+
             let contents = vec![
                 "vJrwpWtwJgWrhcsFMMfFFhFp",
                 "jqHRNqRjqzjGDLGLrsFMfFZSrLrFZsSL",
@@ -107,7 +113,7 @@ mod tests {
                 "CrZsJsPPZsGzwwsLwLmpwMDw",
             ];
 
-            assert_eq!(157, part_1(&contents));
+            assert_eq!(157, get_total_sum_of_shared_item_priorities(&contents));
         }
     }
 
