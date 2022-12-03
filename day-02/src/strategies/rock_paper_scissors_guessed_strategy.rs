@@ -1,4 +1,7 @@
-use crate::enums::{hand_shape::*, round_result::*, round_winner::*};
+use crate::{
+    enums::{hand_shape::*, round_result::*, round_winner::*},
+    utils::letter_to_symbol::*,
+};
 
 pub struct RockPaperScissorsGuessedStrategy {
     pub user_hand_shape: HandShape,
@@ -34,6 +37,39 @@ impl RockPaperScissorsGuessedStrategy {
 
         symbol_points + round_points
     }
+}
+
+pub fn run_guessed_strategy(contents: &Vec<&str>) {
+    let mut total_score = 0;
+
+    for line in contents {
+        let round_info: Vec<&str> = line.split(" ").collect();
+        let opponent_hand_shape = round_info
+            .get(0)
+            .expect("should be able to find the opponent's play");
+
+        let user_hand_shape = round_info
+            .get(1)
+            .expect("should be able to find the user play");
+
+        let round = RockPaperScissorsGuessedStrategy::build(
+            letter_to_symbol(opponent_hand_shape),
+            letter_to_symbol(user_hand_shape),
+        );
+
+        println!(
+            "Opponent: {:?} | You: {:?} | Winner: {:?} | Symbol points: {} | Total points: {}",
+            round.opponent_hand_shape,
+            round.user_hand_shape,
+            round.get_winner(),
+            round.user_hand_shape.get_points(),
+            round.get_total_points()
+        );
+
+        total_score += round.get_total_points();
+    }
+
+    println!("Total score for the whole strategy is {}", total_score);
 }
 
 #[cfg(test)]

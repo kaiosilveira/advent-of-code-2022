@@ -34,7 +34,7 @@ This strategy guide predicts and recommends the following:
 **What would your total score be if everything goes exactly according to your strategy guide?**
 
 <details>
-<summary>See solution</summary>
+<summary><strong>See solution</strong></summary>
 We can start solving this problem by modeling the structure of the Rock Paper Scissors game. A central piece of it is the hand shape each player can choose. The options are well-known and we can model them all as an enum:
 
 ```rust
@@ -307,17 +307,112 @@ That's all!
 
 </details>
 
-## Part two: Oops
+---
+
+## Part two: Oops, the guessed strategy was wrong!
 
 The Elf finishes helping with the tent and sneaks back over to you. "Anyway, the second column says how the round needs to end: X means you need to lose, Y means you need to end the round in a draw, and Z means you need to win. Good luck!"
 
 The total score is still calculated in the same way, but now you need to figure out what shape to choose so the round ends as indicated. The example above now goes like this:
 
-In the first round, your opponent will choose Rock (A), and you need the round to end in a draw (Y), so you also choose Rock. This gives you a score of 1 + 3 = 4.
-In the second round, your opponent will choose Paper (B), and you choose Rock so you lose (X) with a score of 1 + 0 = 1.
-In the third round, you will defeat your opponent's Scissors with Rock for a score of 1 + 6 = 7.
-Now that you're correctly decrypting the ultra top secret strategy guide, you would get a total score of 12.
+- In the first round, your opponent will choose Rock (A), and you need the round to end in a draw (Y), so you also choose Rock. This gives you a score of 1 + 3 = 4.
+- In the second round, your opponent will choose Paper (B), and you choose Rock so you lose (X) with a score of 1 + 0 = 1.
+- In the third round, you will defeat your opponent's Scissors with Rock for a score of 1 + 6 = 7.
+  Now that you're correctly decrypting the ultra top secret strategy guide, you would get a total score of 12.
 
 Following the Elf's instructions for the second column, **what would your total score be if everything goes exactly according to your strategy guide?**
 
-### Solution
+<details>
+<summary><strong>See solution</strong></summary>
+
+As the meaning of the input data changed a little bit after the latest clarifications from the elf, we now need to update the code. Thankfully, all the game logic implemented for `HandShape` still applies. With this in mind, the only thing we need to do is implement a new strategy, one that takes into consideration the expected hand shape to satisfy a battle result, but also computes the winner and the total points for a round, with minor modifications to comply with the new definitions.
+
+Let's start by defining the struct:
+
+```rust
+pub struct RockPaperScissorsRealStrategy {
+    pub expected_result: RoundResult,
+    pub opponents_play: HandShape,
+}
+```
+
+Then, we can add a method to return the expected hand shape to satisfy an expected battle result:
+
+```rust
+pub struct RockPaperScissorsRealStrategy {
+    // -- snip --
+    pub fn get_expected_hand_shape_to_satisfy_result(&self) -> HandShape {
+        match self.expected_result {
+            RoundResult::DRAW => self.opponents_play.clone(),
+            RoundResult::WIN => self.opponents_play.get_defeater(),
+            RoundResult::LOSS => self.opponents_play.get_defeated(),
+        }
+    }
+}
+```
+
+The logic to find the winner is straightforward, considering that we are going to follow the suggested strategy:
+
+```rust
+pub struct RockPaperScissorsRealStrategy {
+    // -- snip --
+    pub fn get_winner(&self) -> RoundWinner {
+        match self.expected_result {
+            RoundResult::DRAW => RoundWinner::NONE,
+            RoundResult::WIN => RoundWinner::USER,
+            RoundResult::LOSS => RoundWinner::OPPONENT,
+        }
+    }
+}
+```
+
+Calculating the total points for a battle round is also straightforward, we just need to sum the points of using the symbol calculated from `get_expected_hand_shape_to_satisfy_result` to the points from the battle round itself:
+
+```rust
+pub struct RockPaperScissorsRealStrategy {
+    // -- snip --
+    pub fn get_total_points(&self) -> i32 {
+        let hand_shape = self.get_expected_hand_shape_to_satisfy_result();
+        let symbol_points = hand_shape.get_points();
+        let round_points = self.expected_result.get_points();
+
+        symbol_points + round_points
+    }
+}
+```
+
+_Note: there are a lot of tests for the methods presented above. Make sure to check the source code to see them if you're curious._
+
+And that's it! Now we just need to take care of the boilerplate:
+
+```rust
+fn run_real_strategy(contents: &Vec<&str>) {
+    let mut total_score = 0;
+
+    for line in contents {
+        let round_info: Vec<&str> = line.split(" ").collect();
+        let opponents_play = round_info
+            .get(0)
+            .expect("should be able to find the opponent's play");
+
+        let suggested_result_letter = round_info
+            .get(1)
+            .expect("should be able to find the suggested result letter");
+
+        let round = RockPaperScissorsRealStrategy::build(
+            letter_to_symbol(opponents_play),
+            letter_to_suggested_result(suggested_result_letter),
+        );
+
+        total_score += round.get_total_points();
+    }
+
+    println!("Total score for the whole strategy is {}", total_score);
+}
+```
+
+And that's all!
+
+</details>
+
+---
