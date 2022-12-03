@@ -5,7 +5,9 @@ pub fn get_total_sum_of_shared_item_priorities(contents: &Vec<&str>) -> usize {
 
     for line in contents {
         let (first_compartment, second_compartment) = split_item_list_into_two_compartments(line);
-        let shared_item_type = find_shared_item_type_between(first_compartment, second_compartment);
+        let shared_item_type = find_shared_item_type_between(first_compartment, second_compartment)
+            .expect("Failed to find a shared item type");
+
         let item_priority = get_char_priority(shared_item_type);
 
         total += item_priority;
@@ -60,13 +62,6 @@ pub fn part_2(contents: &Vec<&str>) -> usize {
     total
 }
 
-pub fn get_char_priority(c: char) -> usize {
-    CHAR_PRIORITY_LOOKUP
-        .find(c)
-        .expect("should be able to find the badge char in the lookup table")
-        + 1
-}
-
 pub fn split_item_list_into_two_compartments(item_list: &str) -> (&str, &str) {
     let length = item_list.len();
     let middle = length / 2;
@@ -76,17 +71,26 @@ pub fn split_item_list_into_two_compartments(item_list: &str) -> (&str, &str) {
     (first_part, second_part)
 }
 
-pub fn find_shared_item_type_between(first_compartment: &str, second_compartment: &str) -> char {
-    let mut shared_item_type: char = '0';
+pub fn get_char_priority(c: char) -> usize {
+    CHAR_PRIORITY_LOOKUP
+        .find(c)
+        .expect("should be able to find the badge char in the lookup table")
+        + 1
+}
+
+pub fn find_shared_item_type_between(
+    first_compartment: &str,
+    second_compartment: &str,
+) -> Option<char> {
+    let mut result: Option<char> = None;
 
     for item_type in first_compartment.chars() {
         if second_compartment.contains(item_type) {
-            shared_item_type = item_type;
-            break;
+            result = Some(item_type);
         };
     }
 
-    shared_item_type
+    result
 }
 
 #[cfg(test)]
@@ -167,11 +171,22 @@ mod tests {
         use super::*;
 
         #[test]
+        fn should_return_none_if_no_shared_item_was_found() {
+            let first_str = "def";
+            let second_str = "abc";
+
+            assert_eq!(None, find_shared_item_type_between(first_str, second_str));
+        }
+
+        #[test]
         fn should_find_the_shared_char_between_two_strings() {
             let first_str = "vJrwpWtwJgWr";
             let second_str = "hcsFMMfFFhFp";
 
-            assert_eq!('p', find_shared_item_type_between(first_str, second_str));
+            assert_eq!(
+                'p',
+                find_shared_item_type_between(first_str, second_str).unwrap()
+            );
         }
     }
 }
