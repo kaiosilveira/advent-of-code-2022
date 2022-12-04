@@ -21,14 +21,14 @@ fn create_report_groups(calorie_report: &Vec<&str>) -> Vec<Vec<i32>> {
     groups
 }
 
-fn reduce(arr: Vec<i32>) -> i32 {
-    let mut partial = 0;
+fn reduce(arr: &Vec<i32>) -> i32 {
+    let mut total = 0;
 
     for item in arr {
-        partial += item;
+        total += item;
     }
 
-    partial
+    total
 }
 
 pub fn find_top_n_elves_carrying_more_calories(report_data: Vec<&str>, take_top_n: usize) -> i32 {
@@ -38,7 +38,7 @@ pub fn find_top_n_elves_carrying_more_calories(report_data: Vec<&str>, take_top_
 
     let mut total_calorie_aggregator: Vec<i32> = vec![];
     for group in create_report_groups(&report_data) {
-        let partial = reduce(group);
+        let partial = reduce(&group);
         total_calorie_aggregator.push(partial);
     }
 
@@ -46,11 +46,7 @@ pub fn find_top_n_elves_carrying_more_calories(report_data: Vec<&str>, take_top_
     total_calorie_aggregator.reverse();
 
     let top_n = &total_calorie_aggregator[0..take_top_n];
-    println!("top_n: {:?}", top_n);
-    let mut total = 0;
-    for i in top_n {
-        total += i;
-    }
+    let total = reduce(&top_n.to_vec());
 
     total
 }
