@@ -1,4 +1,4 @@
-# Advent of Code 2022: Day 03 - Rucksack Reorganization
+# Rucksack Reorganization
 
 Challenge URL: https://adventofcode.com/2022/day/3
 
@@ -8,7 +8,7 @@ Each rucksack has two large compartments. All items of a given type are meant to
 
 The Elves have made a list of all of the items currently in each rucksack (your puzzle input), but they need your help finding the errors. Every item type is identified by a single lowercase or uppercase letter (that is, a and A refer to different types of items).
 
-## Part 01: Reorganizing items
+## Part one: reorganizing items
 
 The list of items for each rucksack is given as characters all on a single line. A given rucksack always has the same number of items in each of its two compartments, so the first half of the characters represent items in the first compartment, while the second half of the characters represent items in the second compartment.
 
@@ -163,7 +163,7 @@ And that's it for part 1!
 
 ---
 
-## Part 02: Grouping by badge type
+## Part two: grouping by badge type
 
 As you finish identifying the misplaced items, the Elves come to you with another issue.
 
@@ -199,4 +199,3 @@ Find the item type that corresponds to the badges of each three-Elf group. **Wha
 <summary><strong>See solution</strong></summary>
 </details>
 
----
