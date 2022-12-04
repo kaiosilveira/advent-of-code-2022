@@ -80,6 +80,7 @@ pub fn get_group_items<'a>(group: &Vec<&'a str>) -> (&'a str, &'a str, &'a str) 
 
     (first_item_list, second_item_list, third_item_list)
 }
+
 #[cfg(test)]
 mod tests {
     use super::*;
