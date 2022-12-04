@@ -1,19 +1,19 @@
 use std::ops::RangeInclusive;
 
-pub fn create_range_for_string_info(str: &str) -> RangeInclusive<i32> {
-    let parts: Vec<&str> = str.split("-").collect();
+pub fn create_range_of_tasks(task_range_info: &str) -> RangeInclusive<i32> {
+    let parts: Vec<&str> = task_range_info.split("-").collect();
     let start: i32 = parts.get(0).unwrap().parse().unwrap();
     let end: i32 = parts.get(1).unwrap().parse().unwrap();
 
     start..=end
 }
 
-pub fn create_ranges_from_pair_info(str: &str) -> (RangeInclusive<i32>, RangeInclusive<i32>) {
+pub fn create_task_ranges_from_pair_info(str: &str) -> (RangeInclusive<i32>, RangeInclusive<i32>) {
     let parts: Vec<&str> = str.split(",").collect();
 
     (
-        create_range_for_string_info(parts.get(0).unwrap()),
-        create_range_for_string_info(parts.get(1).unwrap()),
+        create_range_of_tasks(parts.get(0).unwrap()),
+        create_range_of_tasks(parts.get(1).unwrap()),
     )
 }
 
@@ -31,7 +31,7 @@ pub fn range_fully_contains_other(r1: &RangeInclusive<i32>, r2: &RangeInclusive<
 }
 
 pub fn range_overlaps(r1: &RangeInclusive<i32>, r2: &RangeInclusive<i32>) -> bool {
-  let mut overlaps = false;
+    let mut overlaps = false;
 
     for n in r2.clone() {
         if r1.contains(&n) {
@@ -49,9 +49,9 @@ mod tests {
 
     #[test]
     fn should_create_a_range_from_a_string() {
-        let range = create_range_for_string_info("2-8");
+        let range = create_range_of_tasks("2-8");
         let range: Vec<i32> = range.collect();
-        println!("{:?}", range);
+
         assert_eq!(&2, range.first().unwrap());
         assert_eq!(&8, range.last().unwrap());
     }
@@ -59,7 +59,7 @@ mod tests {
     #[test]
     fn should_create_ranges_from_pair_info() {
         let pair_info = "2-8,3-7";
-        let (r1, r2) = create_ranges_from_pair_info(pair_info);
+        let (r1, r2) = create_task_ranges_from_pair_info(pair_info);
         let r1: Vec<i32> = r1.collect();
         let r2: Vec<i32> = r2.collect();
 
