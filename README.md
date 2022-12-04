@@ -1,3 +1,5 @@
+[![Continuous Integration](https://github.com/kaiosilveira/advent-of-code-2022/actions/workflows/rust.yml/badge.svg)](https://github.com/kaiosilveira/advent-of-code-2022/actions/workflows/rust.yml)
+
 # Advent of Code 2022
 
 This repo contains code solutions for the Advent of Code challenges, with detailed challenge descriptions and step-by-step solution details, including code snippets and tests.
