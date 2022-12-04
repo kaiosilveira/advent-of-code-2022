@@ -1,12 +1,13 @@
 const CHAR_PRIORITY_LOOKUP: &str = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
-pub fn get_total_sum_of_shared_item_priorities(contents: &Vec<&str>) -> usize {
+pub fn get_sum_of_shared_item_priorities(contents: &Vec<&str>) -> usize {
     let mut total = 0;
 
     for line in contents {
         let (first_compartment, second_compartment) = split_item_list_into_two_compartments(line);
-        let shared_item_type = find_shared_item_type_between(first_compartment, second_compartment)
-            .expect("Failed to find a shared item type");
+        let shared_item_type =
+            find_shared_item_type_between(first_compartment, vec![second_compartment])
+                .expect("Failed to find a shared item type");
 
         let item_priority = get_char_priority(shared_item_type);
 
@@ -16,20 +17,16 @@ pub fn get_total_sum_of_shared_item_priorities(contents: &Vec<&str>) -> usize {
     total
 }
 
-pub fn part_2(contents: &Vec<&str>) -> usize {
+pub fn get_sum_of_badge_priorities(contents: &Vec<&str>) -> usize {
     let groups = create_groups_of_three_items(contents);
 
     let mut total = 0;
     for group in groups {
         let (first_item_list, second_item_list, third_item_list) = get_group_items(&group);
 
-        let mut badge_char = '0';
-        for char in first_item_list.chars() {
-            if second_item_list.contains(char) && third_item_list.contains(char) {
-                badge_char = char;
-                break;
-            }
-        }
+        let badge_char =
+            find_shared_item_type_between(first_item_list, vec![second_item_list, third_item_list])
+                .expect("should be able to find a shared item");
 
         let priority = get_char_priority(badge_char);
 
@@ -57,12 +54,12 @@ pub fn get_char_priority(c: char) -> usize {
 
 pub fn find_shared_item_type_between(
     first_compartment: &str,
-    second_compartment: &str,
+    other_compartments: Vec<&str>,
 ) -> Option<char> {
     let mut result: Option<char> = None;
 
     for item_type in first_compartment.chars() {
-        if second_compartment.contains(item_type) {
+        if other_compartments.iter().all(|c| c.contains(item_type)) {
             result = Some(item_type);
             break;
         };
@@ -107,7 +104,25 @@ mod tests {
                 "CrZsJsPPZsGzwwsLwLmpwMDw",
             ];
 
-            assert_eq!(157, get_total_sum_of_shared_item_priorities(&contents));
+            assert_eq!(157, get_sum_of_shared_item_priorities(&contents));
+        }
+    }
+
+    mod get_sum_of_badge_priorities {
+        use super::*;
+
+        #[test]
+        fn should_return_the_correct_sum_of_priorities() {
+            let contents = vec![
+                "vJrwpWtwJgWrhcsFMMfFFhFp",
+                "jqHRNqRjqzjGDLGLrsFMfFZSrLrFZsSL",
+                "PmmdzqPrVvPwwTWBwg",
+                "wMqvLMZHhHMvwLHjbvcjnnSBnvTQFn",
+                "ttgJtRGJQctTZtZT",
+                "CrZsJsPPZsGzwwsLwLmpwMDw",
+            ];
+
+            assert_eq!(70, get_sum_of_badge_priorities(&contents));
         }
     }
 
@@ -134,24 +149,6 @@ mod tests {
             assert_eq!("vJrwpWtwJgWrhcsFMMfFFhFp", first_list);
             assert_eq!("jqHRNqRjqzjGDLGLrsFMfFZSrLrFZsSL", second_list);
             assert_eq!("PmmdzqPrVvPwwTWBwg", third_list);
-        }
-    }
-
-    mod part_02 {
-        use super::*;
-
-        #[test]
-        fn should_return_the_correct_sum_of_priorities() {
-            let contents = vec![
-                "vJrwpWtwJgWrhcsFMMfFFhFp",
-                "jqHRNqRjqzjGDLGLrsFMfFZSrLrFZsSL",
-                "PmmdzqPrVvPwwTWBwg",
-                "wMqvLMZHhHMvwLHjbvcjnnSBnvTQFn",
-                "ttgJtRGJQctTZtZT",
-                "CrZsJsPPZsGzwwsLwLmpwMDw",
-            ];
-
-            assert_eq!(70, part_2(&contents));
         }
     }
 
@@ -191,7 +188,10 @@ mod tests {
             let first_str = "def";
             let second_str = "abc";
 
-            assert_eq!(None, find_shared_item_type_between(first_str, second_str));
+            assert_eq!(
+                None,
+                find_shared_item_type_between(first_str, vec![second_str])
+            );
         }
 
         #[test]
@@ -201,7 +201,7 @@ mod tests {
 
             assert_eq!(
                 'p',
-                find_shared_item_type_between(first_str, second_str).unwrap()
+                find_shared_item_type_between(first_str, vec![second_str]).unwrap()
             );
         }
     }
