@@ -118,7 +118,7 @@ _Note: The `.find` method returns an `Option<T>`, containing the index of the ch
 That's all we need! We can glue all these parts together with a function:
 
 ```rust
-pub fn get_total_sum_of_shared_item_priorities(contents: &Vec<&str>) -> usize {
+pub fn get_sum_of_shared_item_priorities(contents: &Vec<&str>) -> usize {
     let mut total = 0;
 
     for line in contents {
@@ -197,5 +197,64 @@ Find the item type that corresponds to the badges of each three-Elf group. **Wha
 
 <details>
 <summary><strong>See solution</strong></summary>
-</details>
 
+To solve part 2, we need to group the lists three by three:
+
+```rust
+pub fn create_groups_of_three_items<'a>(contents: &Vec<&'a str>) -> Vec<Vec<&'a str>> {
+    contents.chunks(3).map(|g| g.to_vec()).collect()
+}
+```
+
+Then, we need to modify the `find_shared_item_type_between` so it can compare a given list of item types in one compartment to an open-ended list of other compartments. This function's signature now looks like this:
+
+```rust
+pub fn find_shared_item_type_between(
+    first_compartment: &str,
+    other_compartments: Vec<&str>,
+) -> Option<char> {
+    let mut result: Option<char> = None;
+
+    for item_type in first_compartment.chars() {
+        if other_compartments.iter().all(|c| c.contains(item_type)) {
+            result = Some(item_type);
+            break;
+        };
+    }
+
+    result
+}
+```
+
+The priority is calculated the same way:
+
+```rust
+let priority = get_char_priority(badge_char);
+```
+
+The final code looks like:
+
+```rust
+pub fn get_sum_of_badge_priorities(contents: &Vec<&str>) -> usize {
+    let groups = create_groups_of_three_items(contents);
+
+    let mut total = 0;
+    for group in groups {
+        let (first_item_list, second_item_list, third_item_list) = get_group_items(&group);
+
+        let badge_char =
+            find_shared_item_type_between(first_item_list, vec![second_item_list, third_item_list])
+                .expect("should be able to find a shared item");
+
+        let priority = get_char_priority(badge_char);
+
+        total += priority;
+    }
+
+    total
+}
+```
+
+And that's all!
+
+</details>
