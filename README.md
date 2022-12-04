@@ -18,3 +18,4 @@ To be defined
 | #1  | Calorie counting        | [here](./day-01) |
 | #2  | Rock, paper, scissors   | [here](./day-02) |
 | #3  | Rucksack Reorganization | [here](./day-03) |
+| #4  | Camp Cleanup            | [here](./day-04) |
