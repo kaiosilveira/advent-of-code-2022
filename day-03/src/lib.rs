@@ -21,17 +21,7 @@ pub fn part_2(contents: &Vec<&str>) -> usize {
 
     let mut total = 0;
     for group in groups {
-        let first_item_list = group
-            .get(0)
-            .expect("should be able to get the first element of the group");
-
-        let second_item_list = group
-            .get(1)
-            .expect("should be able to get the second element of the group");
-
-        let third_item_list = group
-            .get(2)
-            .expect("should be able to get the third element of the group");
+        let (first_item_list, second_item_list, third_item_list) = get_group_items(&group);
 
         let mut badge_char = '0';
         for char in first_item_list.chars() {
@@ -74,6 +64,7 @@ pub fn find_shared_item_type_between(
     for item_type in first_compartment.chars() {
         if second_compartment.contains(item_type) {
             result = Some(item_type);
+            break;
         };
     }
 
@@ -81,24 +72,17 @@ pub fn find_shared_item_type_between(
 }
 
 pub fn create_groups_of_three_items<'a>(contents: &Vec<&'a str>) -> Vec<Vec<&'a str>> {
-    let mut groups: Vec<Vec<&str>> = vec![];
-
-    let mut group: Vec<&str> = vec![];
-    let mut counter = 0;
-    for line in contents {
-        group.push(line);
-        counter += 1;
-
-        if counter == 3 {
-            groups.push(group.clone());
-            group = vec![];
-            counter = 0;
-        }
-    }
-
-    groups
+    contents.chunks(3).map(|g| g.to_vec()).collect()
 }
 
+pub fn get_group_items<'a>(group: &Vec<&'a str>) -> (&'a str, &'a str, &'a str) {
+    let group_items = group.get(0..3).expect("Should be able to get three items");
+    let first_item_list = group_items.get(0).unwrap();
+    let second_item_list = group.get(1).unwrap();
+    let third_item_list = group.get(2).unwrap();
+
+    (first_item_list, second_item_list, third_item_list)
+}
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -124,6 +108,32 @@ mod tests {
             ];
 
             assert_eq!(157, get_total_sum_of_shared_item_priorities(&contents));
+        }
+    }
+
+    mod get_group_items {
+        use super::*;
+
+        #[test]
+        #[should_panic(expected = "Should be able to get three items")]
+        fn should_fail_if_not_able_to_retrieve_three_items_from_group() {
+            let group = vec![];
+            get_group_items(&group);
+        }
+
+        #[test]
+        fn should_return_the_three_lists_of_a_group() {
+            let group = vec![
+                "vJrwpWtwJgWrhcsFMMfFFhFp",
+                "jqHRNqRjqzjGDLGLrsFMfFZSrLrFZsSL",
+                "PmmdzqPrVvPwwTWBwg",
+            ];
+
+            let (first_list, second_list, third_list) = get_group_items(&group);
+
+            assert_eq!("vJrwpWtwJgWrhcsFMMfFFhFp", first_list);
+            assert_eq!("jqHRNqRjqzjGDLGLrsFMfFZSrLrFZsSL", second_list);
+            assert_eq!("PmmdzqPrVvPwwTWBwg", third_list);
         }
     }
 
