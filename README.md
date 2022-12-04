@@ -9,7 +9,41 @@ Rust is a language created to be fast while also providing a safe runtime. These
 
 ## Repository structure
 
-To be defined
+This monorepo is structured to hold all the code for all days of the advent of code. Each directory starting with `day-` is a cargo-generated Rust project containing all the details about the challenge for that day and also all the code implemented to solve it. The file tree looks like this:
+
+```
+├── README.md
+├── day-01
+│   ├── Cargo.lock
+│   ├── Cargo.toml
+│   ├── README.md
+│   ├── input.txt
+│   ├── sample.txt
+│   └── src
+│       ├── lib.rs
+│       └── main.rs
+.
+. ... day 02 to day n-1
+.
+└── day-n
+    ├── Cargo.lock
+    ├── Cargo.toml
+    ├── README.md
+    ├── input.txt
+    ├── sample.txt
+    └── src
+        ├── lib.rs
+        └── main.rs
+```
+
+Each `day-n` project look similar, containing:
+
+- Cargo related config files
+- a README with the challenge URL, description and collapsable solution blocks (with "**See solution**" as its title)
+- a `sample.txt` file, containing the example described in the challenge
+- a `input.txt` file, containing the actual input provided by the challenge
+- a `src/lib.rs` file, containing the actual implementation and tests
+- a `src/main.rs` file, containing the code that loads the input data, parses it and calls the implementation
 
 ## Solutions
 
