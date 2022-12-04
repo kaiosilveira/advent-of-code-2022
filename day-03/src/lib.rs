@@ -17,20 +17,7 @@ pub fn get_total_sum_of_shared_item_priorities(contents: &Vec<&str>) -> usize {
 }
 
 pub fn part_2(contents: &Vec<&str>) -> usize {
-    let mut groups: Vec<Vec<&str>> = vec![];
-
-    let mut group: Vec<&str> = vec![];
-    let mut counter = 0;
-    for line in contents {
-        group.push(line);
-        counter += 1;
-
-        if counter == 3 {
-            groups.push(group.clone());
-            group = vec![];
-            counter = 0;
-        }
-    }
+    let groups = create_groups_of_three_items(contents);
 
     let mut total = 0;
     for group in groups {
@@ -91,6 +78,25 @@ pub fn find_shared_item_type_between(
     }
 
     result
+}
+
+pub fn create_groups_of_three_items<'a>(contents: &Vec<&'a str>) -> Vec<Vec<&'a str>> {
+    let mut groups: Vec<Vec<&str>> = vec![];
+
+    let mut group: Vec<&str> = vec![];
+    let mut counter = 0;
+    for line in contents {
+        group.push(line);
+        counter += 1;
+
+        if counter == 3 {
+            groups.push(group.clone());
+            group = vec![];
+            counter = 0;
+        }
+    }
+
+    groups
 }
 
 #[cfg(test)]
@@ -186,6 +192,43 @@ mod tests {
             assert_eq!(
                 'p',
                 find_shared_item_type_between(first_str, second_str).unwrap()
+            );
+        }
+    }
+
+    mod create_groups_of_three_items {
+        use super::*;
+
+        #[test]
+        fn should_create_groups_of_three_items() {
+            let contents = vec![
+                "vJrwpWtwJgWrhcsFMMfFFhFp",
+                "PmmdzqPrVvPwwTWBwg",
+                "jqHRNqRjqzjGDLGLrsFMfFZSrLrFZsSL",
+                "ttgJtRGJQctTZtZT",
+                "CrZsJsPPZsGzwwsLwLmpwMDw",
+                "wMqvLMZHhHMvwLHjbvcjnnSBnvTQFn",
+            ];
+
+            let groups = create_groups_of_three_items(&contents);
+            assert_eq!(2, groups.len());
+
+            let first_group = &groups[0];
+            assert_eq!(3, first_group.len());
+            assert_eq!(&"vJrwpWtwJgWrhcsFMMfFFhFp", first_group.get(0).unwrap());
+            assert_eq!(&"PmmdzqPrVvPwwTWBwg", first_group.get(1).unwrap());
+            assert_eq!(
+                &"jqHRNqRjqzjGDLGLrsFMfFZSrLrFZsSL",
+                first_group.get(2).unwrap()
+            );
+
+            let second_group = &groups[1];
+            assert_eq!(3, second_group.len());
+            assert_eq!(&"ttgJtRGJQctTZtZT", second_group.get(0).unwrap());
+            assert_eq!(&"CrZsJsPPZsGzwwsLwLmpwMDw", second_group.get(1).unwrap());
+            assert_eq!(
+                &"wMqvLMZHhHMvwLHjbvcjnnSBnvTQFn",
+                second_group.get(2).unwrap()
             );
         }
     }
