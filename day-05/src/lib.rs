@@ -20,6 +20,10 @@ impl CrateStack {
     pub fn pop_range(&mut self, range: Range<usize>) -> Vec<String> {
         self.items.drain(range).collect()
     }
+
+    pub fn prepend(&mut self, item: String) {
+        self.items.insert(0, item);
+    }
 }
 
 pub fn parse_crate_line(line: &str) -> Vec<String> {

@@ -34,7 +34,7 @@ impl MoveCraneStrategy for CraneMover9000 {
 
         let target = stacks.get_mut(to - 1).unwrap();
         for item in items_to_move {
-            target.items.insert(0, item);
+            target.prepend(item);
         }
     }
 }
