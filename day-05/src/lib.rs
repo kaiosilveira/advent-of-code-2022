@@ -1,5 +1,25 @@
 use regex::Regex;
 
+pub struct CraneMoverCommand {
+    crate_quantity: usize,
+    origin_stack_position: usize,
+    target_stack_position: usize,
+}
+
+impl CraneMoverCommand {
+    pub fn new(
+        crate_quantity: usize,
+        origin_stack_position: usize,
+        target_stack_position: usize,
+    ) -> Self {
+        Self {
+            crate_quantity,
+            origin_stack_position,
+            target_stack_position,
+        }
+    }
+}
+
 pub fn parse_crate_line(line: &str) -> Vec<String> {
     line.chars()
         .collect::<Vec<char>>()
@@ -20,16 +40,24 @@ pub fn parse_command_line(line: &str) -> Vec<usize> {
     cmd
 }
 
-pub fn process_input_lines(lines: &Vec<&str>) -> (Vec<Vec<String>>, Vec<Vec<usize>>) {
+pub fn process_input_lines(lines: &Vec<&str>) -> (Vec<Vec<String>>, Vec<CraneMoverCommand>) {
     let mut item_rows: Vec<Vec<String>> = vec![];
-    let mut commands: Vec<Vec<usize>> = vec![];
+    let mut commands: Vec<CraneMoverCommand> = vec![];
     for line in lines {
         if line.contains("[") {
             let line_data = parse_crate_line(line);
             item_rows.push(line_data);
         } else if line.contains("move") {
             let cmd = parse_command_line(line);
-            commands.push(cmd.clone());
+            let crane_quantity = *cmd.get(0).unwrap();
+            let origin_stack_position = *cmd.get(1).unwrap();
+            let target_stack_position = *cmd.get(2).unwrap();
+
+            commands.push(CraneMoverCommand::new(
+                crane_quantity,
+                origin_stack_position,
+                target_stack_position,
+            ));
         }
     }
 
@@ -63,13 +91,13 @@ pub fn create_columns_from_rows(item_rows: &Vec<Vec<String>>) -> Vec<Vec<String>
     columns
 }
 
-pub fn apply_commands_to_stacks(commands: &Vec<Vec<usize>>, stacks: &mut Vec<Vec<String>>) {
+pub fn apply_commands_to_stacks(commands: &Vec<CraneMoverCommand>, stacks: &mut Vec<Vec<String>>) {
     for cmd in commands {
-        let mv = cmd.get(0).unwrap();
-        let from = cmd.get(1).unwrap();
-        let to = cmd.get(2).unwrap();
+        let mv = cmd.crate_quantity;
+        let from = cmd.origin_stack_position;
+        let to = cmd.target_stack_position;
 
-        let origin = stacks.get_mut(*from - 1).unwrap();
+        let origin = stacks.get_mut(from - 1).unwrap();
 
         let items_to_move: Vec<String> = origin.drain(0..mv.clone()).collect();
 
@@ -78,7 +106,7 @@ pub fn apply_commands_to_stacks(commands: &Vec<Vec<usize>>, stacks: &mut Vec<Vec
             mv, items_to_move, from, to
         );
 
-        let target = stacks.get_mut(*to - 1).unwrap();
+        let target = stacks.get_mut(to - 1).unwrap();
         for item in items_to_move {
             target.insert(0, item);
         }
@@ -116,11 +144,11 @@ pub fn part_02(contents: &Vec<&str>) -> String {
     print_stacks(&stacks);
 
     for cmd in commands {
-        let mv = cmd.get(0).unwrap();
-        let from = cmd.get(1).unwrap();
-        let to = cmd.get(2).unwrap();
+        let mv = cmd.crate_quantity;
+        let from = cmd.origin_stack_position;
+        let to = cmd.target_stack_position;
 
-        let origin = stacks.get_mut(*from - 1).unwrap();
+        let origin = stacks.get_mut(from - 1).unwrap();
 
         let items_to_move: Vec<String> = origin.drain(0..mv.clone()).collect();
 
@@ -129,7 +157,7 @@ pub fn part_02(contents: &Vec<&str>) -> String {
             mv, items_to_move, from, to
         );
 
-        let target = stacks.get_mut(*to - 1).unwrap();
+        let target = stacks.get_mut(to - 1).unwrap();
         target.splice(0..0, items_to_move);
 
         print_stacks(&stacks);
