@@ -1,4 +1,5 @@
 mod crane_movers;
+use std::ops::Range;
 
 use crane_movers::{
     commands::move_command::CraneMoverCommand,
@@ -14,6 +15,10 @@ pub struct CrateStack {
 impl CrateStack {
     pub fn new(items: Vec<String>) -> CrateStack {
         CrateStack { items }
+    }
+
+    pub fn pop_range(&mut self, range: Range<usize>) -> Vec<String> {
+        self.items.drain(range).collect()
     }
 }
 
