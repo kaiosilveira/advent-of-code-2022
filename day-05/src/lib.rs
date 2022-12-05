@@ -63,13 +63,13 @@ pub fn create_columns_from_rows(item_rows: &Vec<Vec<String>>) -> Vec<Vec<String>
     columns
 }
 
-pub fn apply_commands_to_columns(commands: &Vec<Vec<usize>>, columns: &mut Vec<Vec<String>>) {
+pub fn apply_commands_to_stacks(commands: &Vec<Vec<usize>>, stacks: &mut Vec<Vec<String>>) {
     for cmd in commands {
         let mv = cmd.get(0).unwrap();
         let from = cmd.get(1).unwrap();
         let to = cmd.get(2).unwrap();
 
-        let origin = columns.get_mut(*from - 1).unwrap();
+        let origin = stacks.get_mut(*from - 1).unwrap();
 
         let items_to_move: Vec<String> = origin.drain(0..mv.clone()).collect();
 
@@ -78,18 +78,18 @@ pub fn apply_commands_to_columns(commands: &Vec<Vec<usize>>, columns: &mut Vec<V
             mv, items_to_move, from, to
         );
 
-        let target = columns.get_mut(*to - 1).unwrap();
+        let target = stacks.get_mut(*to - 1).unwrap();
         for item in items_to_move {
             target.insert(0, item);
         }
 
-        print_columns(&columns.len(), &columns);
+        print_stacks(&stacks.len(), &stacks);
     }
 }
 
-pub fn get_topmost_item_from_each_column(columns: &Vec<Vec<String>>) -> String {
+pub fn get_topmost_item_from_each_stack(stacks: &Vec<Vec<String>>) -> String {
     let mut items: Vec<&str> = vec![];
-    for c in columns {
+    for c in stacks {
         items.push(c.get(0).unwrap());
     }
 
@@ -100,28 +100,28 @@ pub fn get_topmost_item_from_each_column(columns: &Vec<Vec<String>>) -> String {
         .join("")
 }
 
-pub fn part_01(contents: &Vec<&str>) -> String {
-    let (item_rows, commands) = process_input_lines(contents);
+pub fn part_01(stacks: &Vec<&str>) -> String {
+    let (item_rows, commands) = process_input_lines(stacks);
     let mut columns = create_columns_from_rows(&item_rows);
 
-    apply_commands_to_columns(&commands, &mut columns);
+    apply_commands_to_stacks(&commands, &mut columns);
 
-    get_topmost_item_from_each_column(&columns)
+    get_topmost_item_from_each_stack(&columns)
 }
 
 pub fn part_02(contents: &Vec<&str>) -> String {
     let (item_rows, commands) = process_input_lines(contents);
     let len = get_number_of_columns_from(&item_rows);
-    let mut columns = create_columns_from_rows(&item_rows);
+    let mut stacks = create_columns_from_rows(&item_rows);
 
-    print_columns(&len, &columns);
+    print_stacks(&len, &stacks);
 
     for cmd in commands {
         let mv = cmd.get(0).unwrap();
         let from = cmd.get(1).unwrap();
         let to = cmd.get(2).unwrap();
 
-        let origin = columns.get_mut(*from - 1).unwrap();
+        let origin = stacks.get_mut(*from - 1).unwrap();
 
         let items_to_move: Vec<String> = origin.drain(0..mv.clone()).collect();
 
@@ -130,19 +130,19 @@ pub fn part_02(contents: &Vec<&str>) -> String {
             mv, items_to_move, from, to
         );
 
-        let target = columns.get_mut(*to - 1).unwrap();
+        let target = stacks.get_mut(*to - 1).unwrap();
         target.splice(0..0, items_to_move);
 
-        print_columns(&len, &columns);
+        print_stacks(&len, &stacks);
     }
 
-    get_topmost_item_from_each_column(&columns)
+    get_topmost_item_from_each_stack(&stacks)
 }
 
-pub fn print_columns(len: &usize, columns: &Vec<Vec<String>>) {
+pub fn print_stacks(len: &usize, stacks: &Vec<Vec<String>>) {
     println!("");
     (0..*len).for_each(|n| {
-        for c in columns {
+        for c in stacks {
             match c.get(n) {
                 Some(v) => print!("{:?}", v),
                 None => print!("     "),
