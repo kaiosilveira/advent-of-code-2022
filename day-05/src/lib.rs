@@ -3,7 +3,6 @@ mod crane_movers;
 use crane_movers::{
     commands::move_command::CraneMoverCommand,
     cranes::{crane_mover_9000::CraneMover9000, crane_mover_9001::CraneMover9001},
-    strategies::move_crane_strategy::MoveCraneStrategy,
 };
 use regex::Regex;
 
@@ -78,16 +77,6 @@ pub fn create_columns_from_rows(item_rows: &Vec<Vec<String>>) -> Vec<Vec<String>
     columns
 }
 
-pub fn apply_commands_to_stacks(
-    commands: &Vec<CraneMoverCommand>,
-    stacks: &mut Vec<Vec<String>>,
-    crate_mover: impl MoveCraneStrategy,
-) {
-    commands
-        .iter()
-        .for_each(|cmd| cmd.apply_using(&crate_mover, stacks));
-}
-
 pub fn get_topmost_item_from_each_stack(stacks: &Vec<Vec<String>>) -> String {
     let mut items: Vec<&str> = vec![];
     for c in stacks {
@@ -105,18 +94,20 @@ pub fn move_crates_one_by_one(stacks: &Vec<&str>) -> String {
     let (item_rows, commands) = process_input_lines(stacks);
     let mut stacks = create_columns_from_rows(&item_rows);
 
-    apply_commands_to_stacks(&commands, &mut stacks, CraneMover9000::new());
+    for command in commands {
+        command.apply_using(&CraneMover9000::new(), &mut stacks);
+    }
 
     get_topmost_item_from_each_stack(&stacks)
 }
 
-pub fn move_multiple_crates_at_once(contents: &Vec<&str>) -> String {
-    let (item_rows, commands) = process_input_lines(contents);
+pub fn move_multiple_crates_at_once(stacks: &Vec<&str>) -> String {
+    let (item_rows, commands) = process_input_lines(stacks);
     let mut stacks = create_columns_from_rows(&item_rows);
 
-    print_stacks(&stacks);
-
-    apply_commands_to_stacks(&commands, &mut stacks, CraneMover9001::new());
+    for command in commands {
+        command.apply_using(&CraneMover9001::new(), &mut stacks);
+    }
 
     get_topmost_item_from_each_stack(&stacks)
 }
