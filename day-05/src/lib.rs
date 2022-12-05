@@ -1,6 +1,10 @@
 mod crane_movers;
 
-use crane_movers::cranes::{CraneMover9000, CraneMover9001, CraneMoverCommand, MoveCraneStrategy};
+use crane_movers::{
+    commands::move_command::CraneMoverCommand,
+    cranes::{crane_mover_9000::CraneMover9000, crane_mover_9001::CraneMover9001},
+    strategies::move_crane_strategy::MoveCraneStrategy,
+};
 use regex::Regex;
 
 pub fn parse_crate_line(line: &str) -> Vec<String> {

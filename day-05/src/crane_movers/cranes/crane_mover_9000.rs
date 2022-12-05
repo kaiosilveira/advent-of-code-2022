@@ -1,0 +1,36 @@
+use crate::crane_movers::{
+    commands::move_command::CraneMoverCommand, strategies::move_crane_strategy::MoveCraneStrategy,
+};
+
+pub struct CraneMover9000 {
+    pub model: String,
+}
+
+impl CraneMover9000 {
+    pub fn new() -> CraneMover9000 {
+        CraneMover9000 {
+            model: String::from("Crane Mover 9000"),
+        }
+    }
+}
+
+impl MoveCraneStrategy for CraneMover9000 {
+    fn process_move_command(&self, cmd: &CraneMoverCommand, stacks: &mut Vec<Vec<String>>) {
+        let mv = cmd.crate_quantity;
+        let from = cmd.origin_stack_position;
+        let to = cmd.target_stack_position;
+
+        let origin = stacks.get_mut(from - 1).unwrap();
+        let items_to_move: Vec<String> = origin.drain(0..mv.clone()).collect();
+
+        println!(
+            "Moving {} items ({:?}) from {} to {}",
+            mv, items_to_move, from, to
+        );
+
+        let target = stacks.get_mut(to - 1).unwrap();
+        for item in items_to_move {
+            target.insert(0, item);
+        }
+    }
+}
