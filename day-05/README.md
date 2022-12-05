@@ -71,7 +71,34 @@ The Elves just need to know which crate will end up on top of each stack; in thi
 <details>
 <summary><strong>🚧 WIP: See solution 🚧</strong></summary>
 
-- input parsing:
+To solve this problem, we first need to parse all the lines coming from the input file into a structures that we can actually work with. From the challenge description, there are three different types of lines, each of them described below.
+
+**Lines with crate data**
+
+These lines represent the current structure of a row of stacks, either with or without crates in them. Examples are:
+
+- `[Z] [M] [P]`
+- `        [D]`
+- `[N] [C]    `
+
+**Lines with command data**
+
+These lines represent the commands we need to apply on the stacks. Examples are:
+
+- `move 1 from 2 to 1`
+- `move 3 from 1 to 3`
+- `move 2 from 2 to 1`
+
+**Lines with stack numbers**
+These lines contain numbers for each stack. An example is `1   2   3`.
+
+To process these lines, we can introduce the concept of a "column". A column is a sequence of three characters, followed by trailing a space. For example, we can say that `[Z] [M] [P]` has three columns: `[Z] `, `[M] ` and `[P]`. Based on this observation, we can collect all the chars of a line into a vector and then split it into chunks of four:
+
+```rust
+line.chars().collect::<Vec<char>>().chunks(4)
+```
+
+Then, we just need to get rid of the trailing space and convert the chars back into a string. The final code for this part looks like:
 
 ```rust
 pub fn parse_crate_line(line: &str) -> Vec<String> {
@@ -83,6 +110,25 @@ pub fn parse_crate_line(line: &str) -> Vec<String> {
         .collect::<Vec<String>>()
 }
 
+#[cfg(test)]
+mod tests {
+    // -- snip --
+    #[test]
+    fn should_parse_a_crate_line() {
+        let line = "[Z] [M] [P]";
+
+        let result = parse_crate_line(&line);
+
+        assert_eq!("[Z]", result.get(0).unwrap());
+        assert_eq!("[M]", result.get(1).unwrap());
+        assert_eq!("[P]", result.get(2).unwrap());
+    }
+}
+```
+
+Next up, let's handle the liens representing commands. Each command has the same pattern: `move {quantity} from {origin} to {target}`, where `quantity`, `origin` and `target` are numbers. We can capture this pattern in a regular expression, using the `regex` crate, to grab the command parts and store it into a vector:
+
+```rust
 pub fn parse_command_line(line: &str) -> Vec<usize> {
     let mut cmd: Vec<usize> = vec![];
 
@@ -94,6 +140,49 @@ pub fn parse_command_line(line: &str) -> Vec<usize> {
     cmd
 }
 
+#[cfg(test)]
+mod tests {
+    // -- snip --
+    #[test]
+    fn should_parse_a_command_line() {
+        let line = "move 1 from 2 to 1";
+
+        let result = parse_command_line(&line);
+
+        assert_eq!(1, *result.get(0).unwrap());
+        assert_eq!(2, *result.get(1).unwrap());
+        assert_eq!(1, *result.get(2).unwrap());
+    }
+}
+```
+
+We can also introduce a dedicated structure to hold information about a command:
+
+```rust
+pub struct CraneMoverCommand {
+    pub crate_quantity: usize,
+    pub origin_stack_position: usize,
+    pub target_stack_position: usize,
+}
+
+impl CraneMoverCommand {
+    pub fn new(
+        crate_quantity: usize,
+        origin_stack_position: usize,
+        target_stack_position: usize,
+    ) -> Self {
+        Self {
+            crate_quantity,
+            origin_stack_position,
+            target_stack_position,
+        }
+    }
+}
+```
+
+Gluing all the above together, we can now implement a function that takes a vector of input lines and returns all the parsed rows and the commands:
+
+```rust
 pub fn process_input_lines(lines: &Vec<&str>) -> (Vec<Vec<String>>, Vec<CraneMoverCommand>) {
     let mut item_rows: Vec<Vec<String>> = vec![];
     let mut commands: Vec<CraneMoverCommand> = vec![];
@@ -119,6 +208,52 @@ pub fn process_input_lines(lines: &Vec<&str>) -> (Vec<Vec<String>>, Vec<CraneMov
 }
 ```
 
+We can now implement a `struct` to represent a crate stack, i.e., a "column":
+
+```rust
+pub struct CrateStack {
+    items: Vec<String>,
+}
+
+impl CrateStack {
+    pub fn new(items: Vec<String>) -> CrateStack {
+        CrateStack { items }
+    }
+}
+```
+
+We can also implement logic on `CrateStack` so it knows how to create itself from a list of rows:
+
+```rust
+impl CrateStack {
+    pub fn from_rows(item_rows: &Vec<Vec<String>>) -> Vec<CrateStack> {
+        let mut stacks: Vec<CrateStack> = vec![];
+        let len = get_number_of_columns_from(item_rows);
+
+        (0..len).into_iter().for_each(|n| {
+            let mut stack_items: Vec<String> = Vec::new();
+            for row in item_rows {
+                match &row.get(n) {
+                    Some(v) => {
+                        if !v.is_empty() {
+                            stack_items.push(v.to_string())
+                        }
+                    }
+                    None => (),
+                }
+            }
+
+            stacks.push(CrateStack::new(stack_items.clone()));
+        });
+
+        stacks
+    }
+}
+```
+
+---
+
+WIP 👇🏽
 - `MoveCraneStrategy`:
 
 ```rust
@@ -130,12 +265,6 @@ pub trait MoveCraneStrategy {
 - `CraneMoverCommand`:
 
 ```rust
-pub struct CraneMoverCommand {
-    pub crate_quantity: usize,
-    pub origin_stack_position: usize,
-    pub target_stack_position: usize,
-}
-
 impl CraneMoverCommand {
     pub fn new(
         crate_quantity: usize,
@@ -363,3 +492,4 @@ impl MoveCraneStrategy for CraneMover9001 {
 ```
 
 </details>
+s
