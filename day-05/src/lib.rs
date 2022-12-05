@@ -24,6 +24,10 @@ impl CrateStack {
     pub fn prepend(&mut self, item: String) {
         self.items.insert(0, item);
     }
+
+    pub fn prepend_many(&mut self, items: Vec<String>) {
+        self.items.splice(0..0, items);
+    }
 }
 
 pub fn parse_crate_line(line: &str) -> Vec<String> {

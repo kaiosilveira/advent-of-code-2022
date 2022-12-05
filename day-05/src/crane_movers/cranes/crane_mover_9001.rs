@@ -33,6 +33,6 @@ impl MoveCraneStrategy for CraneMover9001 {
         );
 
         let target = stacks.get_mut(to - 1).unwrap();
-        target.items.splice(0..0, items_to_move);
+        target.prepend_many(items_to_move);
     }
 }
