@@ -1,31 +1,49 @@
 use regex::Regex;
 
-pub fn part_01(contents: &Vec<&str>) -> String {
+pub fn parse_crate_line(line: &str) -> Vec<String> {
+    line.chars()
+        .collect::<Vec<char>>()
+        .chunks(4)
+        .map(|c| c.iter().collect::<String>())
+        .map(|s| String::from(s.trim()))
+        .collect::<Vec<String>>()
+}
+
+pub fn parse_command_line(line: &str) -> Vec<usize> {
+    let mut cmd: Vec<usize> = vec![];
+
+    for cap in Regex::new(r"\w+\s\d+\s?").unwrap().captures_iter(line) {
+        let cmd_part: Vec<&str> = cap.get(0).unwrap().as_str().trim().split(" ").collect();
+        cmd.push(cmd_part.get(1).unwrap().parse::<usize>().unwrap());
+    }
+
+    cmd
+}
+
+pub fn process_input_lines(lines: &Vec<&str>) -> (Vec<Vec<String>>, Vec<Vec<usize>>) {
     let mut item_rows: Vec<Vec<String>> = vec![];
     let mut commands: Vec<Vec<usize>> = vec![];
-    for line in contents {
+    for line in lines {
         if line.contains("[") {
-            let line_data = line
-                .chars()
-                .collect::<Vec<char>>()
-                .chunks(4)
-                .map(|c| c.iter().collect::<String>())
-                .map(|s| String::from(s.trim()))
-                .collect::<Vec<String>>();
-
+            let line_data = parse_crate_line(line);
             item_rows.push(line_data);
         } else if line.contains("move") {
-            let mut cmd: Vec<usize> = vec![];
-            for cap in Regex::new(r"\w+\s\d+\s?").unwrap().captures_iter(line) {
-                let cmd_part: Vec<&str> = cap.get(0).unwrap().as_str().trim().split(" ").collect();
-                cmd.push(cmd_part.get(1).unwrap().parse::<usize>().unwrap());
-            }
+            let cmd = parse_command_line(line);
             commands.push(cmd.clone());
         }
     }
 
-    let len = item_rows.iter().map(|r| r.len()).max().unwrap();
-    println!("len: {}", len);
+    (item_rows, commands)
+}
+
+pub fn get_number_of_columns_from(rows: &Vec<Vec<String>>) -> usize {
+    rows.iter().map(|r| r.len()).max().unwrap()
+}
+
+pub fn part_01(contents: &Vec<&str>) -> String {
+    let (item_rows, commands) = process_input_lines(contents);
+    let len = get_number_of_columns_from(&item_rows);
+
     let mut columns: Vec<Vec<String>> = vec![];
 
     (0..len).into_iter().for_each(|n| {
@@ -85,14 +103,7 @@ pub fn part_02(contents: &Vec<&str>) -> String {
     let mut commands: Vec<Vec<usize>> = vec![];
     for line in contents {
         if line.contains("[") {
-            let line_data = line
-                .chars()
-                .collect::<Vec<char>>()
-                .chunks(4)
-                .map(|c| c.iter().collect::<String>())
-                .map(|s| String::from(s.trim()))
-                .collect::<Vec<String>>();
-
+            let line_data = parse_crate_line(line);
             item_rows.push(line_data);
         } else if line.contains("move") {
             let mut cmd: Vec<usize> = vec![];
@@ -209,5 +220,35 @@ mod tests {
 
         let r = part_02(&contents);
         assert_eq!("MCD", r);
+    }
+
+    mod parse_crate_line_tests {
+        use super::*;
+
+        #[test]
+        fn should_parse_a_crate_line() {
+            let line = "[Z] [M] [P]";
+
+            let result = parse_crate_line(&line);
+
+            assert_eq!("[Z]", result.get(0).unwrap());
+            assert_eq!("[M]", result.get(1).unwrap());
+            assert_eq!("[P]", result.get(2).unwrap());
+        }
+    }
+
+    mod parse_command_line_tests {
+        use super::*;
+
+        #[test]
+        fn should_parse_a_command_line() {
+            let line = "move 1 from 2 to 1";
+
+            let result = parse_command_line(&line);
+
+            assert_eq!(1, *result.get(0).unwrap());
+            assert_eq!(2, *result.get(1).unwrap());
+            assert_eq!(1, *result.get(2).unwrap());
+        }
     }
 }
