@@ -63,12 +63,7 @@ pub fn create_columns_from_rows(item_rows: &Vec<Vec<String>>) -> Vec<Vec<String>
     columns
 }
 
-pub fn part_01(contents: &Vec<&str>) -> String {
-    let (item_rows, commands) = process_input_lines(contents);
-    let len = get_number_of_columns_from(&item_rows);
-    let mut columns = create_columns_from_rows(&item_rows);
-    print_columns(&len, &columns);
-
+pub fn apply_commands_to_columns(commands: &Vec<Vec<usize>>, columns: &mut Vec<Vec<String>>) {
     for cmd in commands {
         let mv = cmd.get(0).unwrap();
         let from = cmd.get(1).unwrap();
@@ -88,9 +83,18 @@ pub fn part_01(contents: &Vec<&str>) -> String {
             target.insert(0, item);
         }
 
-        print_columns(&len, &columns);
+        print_columns(&columns.len(), &columns);
     }
+}
 
+pub fn part_01(contents: &Vec<&str>) -> String {
+    let (item_rows, commands) = process_input_lines(contents);
+    let len = get_number_of_columns_from(&item_rows);
+    let mut columns = create_columns_from_rows(&item_rows);
+
+    print_columns(&len, &columns);
+
+    apply_commands_to_columns(&commands, &mut columns);
     let mut items: Vec<&str> = vec![];
     for c in &columns {
         items.push(c.get(0).unwrap());
@@ -107,6 +111,7 @@ pub fn part_02(contents: &Vec<&str>) -> String {
     let (item_rows, commands) = process_input_lines(contents);
     let len = get_number_of_columns_from(&item_rows);
     let mut columns = create_columns_from_rows(&item_rows);
+
     print_columns(&len, &columns);
 
     for cmd in commands {
