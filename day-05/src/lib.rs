@@ -83,10 +83,9 @@ pub fn apply_commands_to_stacks(
     stacks: &mut Vec<Vec<String>>,
     crate_mover: impl MoveCraneStrategy,
 ) {
-    for cmd in commands {
-        crate_mover.process_move_command(cmd, stacks);
-        print_stacks(&stacks);
-    }
+    commands
+        .iter()
+        .for_each(|cmd| cmd.apply_using(&crate_mover, stacks));
 }
 
 pub fn get_topmost_item_from_each_stack(stacks: &Vec<Vec<String>>) -> String {
