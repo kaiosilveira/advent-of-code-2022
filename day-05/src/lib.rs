@@ -3,6 +3,7 @@ mod crane_movers;
 use crane_movers::{
     commands::move_command::CraneMoverCommand,
     cranes::{crane_mover_9000::CraneMover9000, crane_mover_9001::CraneMover9001},
+    strategies::move_crane_strategy::MoveCraneStrategy,
 };
 use regex::Regex;
 
@@ -90,26 +91,26 @@ pub fn get_topmost_item_from_each_stack(stacks: &Vec<Vec<String>>) -> String {
         .join("")
 }
 
-pub fn move_crates_one_by_one(input_lines: &Vec<&str>) -> String {
+pub fn process_commands_and_return_the_topmost_item(
+    crane: &impl MoveCraneStrategy,
+    input_lines: &Vec<&str>,
+) -> String {
     let (item_rows, commands) = process_input_lines(input_lines);
     let mut stacks = create_stacks_from_rows(&item_rows);
 
     for command in commands {
-        command.apply_using(&CraneMover9000::new(), &mut stacks);
+        command.apply_using(crane, &mut stacks);
     }
 
     get_topmost_item_from_each_stack(&stacks)
 }
 
+pub fn move_crates_one_by_one(input_lines: &Vec<&str>) -> String {
+    process_commands_and_return_the_topmost_item(&CraneMover9000::new(), input_lines)
+}
+
 pub fn move_multiple_crates_at_once(input_lines: &Vec<&str>) -> String {
-    let (item_rows, commands) = process_input_lines(input_lines);
-    let mut stacks = create_stacks_from_rows(&item_rows);
-
-    for command in commands {
-        command.apply_using(&CraneMover9001::new(), &mut stacks);
-    }
-
-    get_topmost_item_from_each_stack(&stacks)
+    process_commands_and_return_the_topmost_item(&CraneMover9001::new(), input_lines)
 }
 
 pub fn print_stacks(stacks: &Vec<Vec<String>>) {
