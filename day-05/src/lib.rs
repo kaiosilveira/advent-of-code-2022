@@ -7,6 +7,16 @@ use crane_movers::{
 };
 use regex::Regex;
 
+pub struct CrateStack {
+    pub items: Vec<String>,
+}
+
+impl CrateStack {
+    pub fn new(items: Vec<String>) -> CrateStack {
+        CrateStack { items }
+    }
+}
+
 pub fn parse_crate_line(line: &str) -> Vec<String> {
     line.chars()
         .collect::<Vec<char>>()
@@ -55,33 +65,33 @@ pub fn get_number_of_columns_from(rows: &Vec<Vec<String>>) -> usize {
     rows.iter().map(|r| r.len()).max().unwrap()
 }
 
-pub fn create_stacks_from_rows(item_rows: &Vec<Vec<String>>) -> Vec<Vec<String>> {
-    let mut columns: Vec<Vec<String>> = vec![];
+pub fn create_stacks_from_rows(item_rows: &Vec<Vec<String>>) -> Vec<CrateStack> {
+    let mut stacks: Vec<CrateStack> = vec![];
     let len = get_number_of_columns_from(item_rows);
 
     (0..len).into_iter().for_each(|n| {
-        let mut column: Vec<String> = Vec::new();
+        let mut stack_items: Vec<String> = Vec::new();
         for row in item_rows {
             match &row.get(n) {
                 Some(v) => {
                     if !v.is_empty() {
-                        column.push(v.to_string())
+                        stack_items.push(v.to_string())
                     }
                 }
                 None => (),
             }
         }
 
-        columns.push(column.clone());
+        stacks.push(CrateStack::new(stack_items.clone()));
     });
 
-    columns
+    stacks
 }
 
-pub fn get_topmost_item_from_each_stack(stacks: &Vec<Vec<String>>) -> String {
+pub fn get_topmost_item_from_each_stack(stacks: &Vec<CrateStack>) -> String {
     let mut items: Vec<&str> = vec![];
     for c in stacks {
-        items.push(c.get(0).unwrap());
+        items.push(c.items.get(0).unwrap());
     }
 
     items

@@ -1,4 +1,4 @@
-use crate::crane_movers::strategies::move_crane_strategy::MoveCraneStrategy;
+use crate::{crane_movers::strategies::move_crane_strategy::MoveCraneStrategy, CrateStack};
 
 pub struct CraneMoverCommand {
     pub crate_quantity: usize,
@@ -19,7 +19,7 @@ impl CraneMoverCommand {
         }
     }
 
-    pub fn apply_using(&self, crane: &impl MoveCraneStrategy, stacks: &mut Vec<Vec<String>>) {
+    pub fn apply_using(&self, crane: &impl MoveCraneStrategy, stacks: &mut Vec<CrateStack>) {
         crane.process_move_command(self, stacks);
     }
 }

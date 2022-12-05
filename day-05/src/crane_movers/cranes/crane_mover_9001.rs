@@ -1,6 +1,6 @@
-use crate::crane_movers::{
+use crate::{crane_movers::{
     commands::move_command::CraneMoverCommand, strategies::move_crane_strategy::MoveCraneStrategy,
-};
+}, CrateStack};
 
 pub struct CraneMover9001 {
     pub model: String,
@@ -15,13 +15,13 @@ impl CraneMover9001 {
 }
 
 impl MoveCraneStrategy for CraneMover9001 {
-    fn process_move_command(&self, cmd: &CraneMoverCommand, stacks: &mut Vec<Vec<String>>) {
+    fn process_move_command(&self, cmd: &CraneMoverCommand, stacks: &mut Vec<CrateStack>) {
         let mv = cmd.crate_quantity;
         let from = cmd.origin_stack_position;
         let to = cmd.target_stack_position;
 
         let origin = stacks.get_mut(from - 1).unwrap();
-        let items_to_move: Vec<String> = origin.drain(0..mv.clone()).collect();
+        let items_to_move: Vec<String> = origin.items.drain(0..mv.clone()).collect();
 
         println!(
             "Moving {} items ({:?}) from {} to {}",
@@ -29,6 +29,6 @@ impl MoveCraneStrategy for CraneMover9001 {
         );
 
         let target = stacks.get_mut(to - 1).unwrap();
-        target.splice(0..0, items_to_move);
+        target.items.splice(0..0, items_to_move);
     }
 }
