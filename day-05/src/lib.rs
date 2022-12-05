@@ -20,6 +20,74 @@ impl CraneMoverCommand {
     }
 }
 
+pub trait MoveCraneStrategy {
+    fn process_move_command(&self, cmd: &CraneMoverCommand, stacks: &mut Vec<Vec<String>>);
+}
+
+pub struct CraneMover9000 {
+    pub model: String,
+}
+
+pub struct CraneMover9001 {
+    pub model: String,
+}
+
+impl CraneMover9001 {
+    pub fn new() -> CraneMover9001 {
+        CraneMover9001 {
+            model: String::from("Crane Mover 9001"),
+        }
+    }
+}
+
+impl CraneMover9000 {
+    pub fn new() -> CraneMover9000 {
+        CraneMover9000 {
+            model: String::from("Crane Mover 9000"),
+        }
+    }
+}
+
+impl MoveCraneStrategy for CraneMover9000 {
+    fn process_move_command(&self, cmd: &CraneMoverCommand, stacks: &mut Vec<Vec<String>>) {
+        let mv = cmd.crate_quantity;
+        let from = cmd.origin_stack_position;
+        let to = cmd.target_stack_position;
+
+        let origin = stacks.get_mut(from - 1).unwrap();
+        let items_to_move: Vec<String> = origin.drain(0..mv.clone()).collect();
+
+        println!(
+            "Moving {} items ({:?}) from {} to {}",
+            mv, items_to_move, from, to
+        );
+
+        let target = stacks.get_mut(to - 1).unwrap();
+        for item in items_to_move {
+            target.insert(0, item);
+        }
+    }
+}
+
+impl MoveCraneStrategy for CraneMover9001 {
+    fn process_move_command(&self, cmd: &CraneMoverCommand, stacks: &mut Vec<Vec<String>>) {
+        let mv = cmd.crate_quantity;
+        let from = cmd.origin_stack_position;
+        let to = cmd.target_stack_position;
+
+        let origin = stacks.get_mut(from - 1).unwrap();
+        let items_to_move: Vec<String> = origin.drain(0..mv.clone()).collect();
+
+        println!(
+            "Moving {} items ({:?}) from {} to {}",
+            mv, items_to_move, from, to
+        );
+
+        let target = stacks.get_mut(to - 1).unwrap();
+        target.splice(0..0, items_to_move);
+    }
+}
+
 pub fn parse_crate_line(line: &str) -> Vec<String> {
     line.chars()
         .collect::<Vec<char>>()
@@ -91,26 +159,13 @@ pub fn create_columns_from_rows(item_rows: &Vec<Vec<String>>) -> Vec<Vec<String>
     columns
 }
 
-pub fn apply_commands_to_stacks(commands: &Vec<CraneMoverCommand>, stacks: &mut Vec<Vec<String>>) {
+pub fn apply_commands_to_stacks(
+    commands: &Vec<CraneMoverCommand>,
+    stacks: &mut Vec<Vec<String>>,
+    crate_mover: impl MoveCraneStrategy,
+) {
     for cmd in commands {
-        let mv = cmd.crate_quantity;
-        let from = cmd.origin_stack_position;
-        let to = cmd.target_stack_position;
-
-        let origin = stacks.get_mut(from - 1).unwrap();
-
-        let items_to_move: Vec<String> = origin.drain(0..mv.clone()).collect();
-
-        println!(
-            "Moving {} items ({:?}) from {} to {}",
-            mv, items_to_move, from, to
-        );
-
-        let target = stacks.get_mut(to - 1).unwrap();
-        for item in items_to_move {
-            target.insert(0, item);
-        }
-
+        crate_mover.process_move_command(cmd, stacks);
         print_stacks(&stacks);
     }
 }
@@ -130,11 +185,11 @@ pub fn get_topmost_item_from_each_stack(stacks: &Vec<Vec<String>>) -> String {
 
 pub fn part_01(stacks: &Vec<&str>) -> String {
     let (item_rows, commands) = process_input_lines(stacks);
-    let mut columns = create_columns_from_rows(&item_rows);
+    let mut stacks = create_columns_from_rows(&item_rows);
 
-    apply_commands_to_stacks(&commands, &mut columns);
+    apply_commands_to_stacks(&commands, &mut stacks, CraneMover9000::new());
 
-    get_topmost_item_from_each_stack(&columns)
+    get_topmost_item_from_each_stack(&stacks)
 }
 
 pub fn part_02(contents: &Vec<&str>) -> String {
@@ -143,25 +198,7 @@ pub fn part_02(contents: &Vec<&str>) -> String {
 
     print_stacks(&stacks);
 
-    for cmd in commands {
-        let mv = cmd.crate_quantity;
-        let from = cmd.origin_stack_position;
-        let to = cmd.target_stack_position;
-
-        let origin = stacks.get_mut(from - 1).unwrap();
-
-        let items_to_move: Vec<String> = origin.drain(0..mv.clone()).collect();
-
-        println!(
-            "Moving {} items ({:?}) from {} to {}",
-            mv, items_to_move, from, to
-        );
-
-        let target = stacks.get_mut(to - 1).unwrap();
-        target.splice(0..0, items_to_move);
-
-        print_stacks(&stacks);
-    }
+    apply_commands_to_stacks(&commands, &mut stacks, CraneMover9001::new());
 
     get_topmost_item_from_each_stack(&stacks)
 }
