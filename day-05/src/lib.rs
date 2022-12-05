@@ -40,15 +40,13 @@ pub fn get_number_of_columns_from(rows: &Vec<Vec<String>>) -> usize {
     rows.iter().map(|r| r.len()).max().unwrap()
 }
 
-pub fn part_01(contents: &Vec<&str>) -> String {
-    let (item_rows, commands) = process_input_lines(contents);
-    let len = get_number_of_columns_from(&item_rows);
-
+pub fn create_columns_from_rows(item_rows: &Vec<Vec<String>>) -> Vec<Vec<String>> {
     let mut columns: Vec<Vec<String>> = vec![];
+    let len = get_number_of_columns_from(item_rows);
 
     (0..len).into_iter().for_each(|n| {
         let mut column: Vec<String> = Vec::new();
-        for row in &item_rows {
+        for row in item_rows {
             match &row.get(n) {
                 Some(v) => {
                     if !v.is_empty() {
@@ -62,6 +60,13 @@ pub fn part_01(contents: &Vec<&str>) -> String {
         columns.push(column.clone());
     });
 
+    columns
+}
+
+pub fn part_01(contents: &Vec<&str>) -> String {
+    let (item_rows, commands) = process_input_lines(contents);
+    let len = get_number_of_columns_from(&item_rows);
+    let mut columns = create_columns_from_rows(&item_rows);
     print_columns(&len, &columns);
 
     for cmd in commands {
@@ -99,43 +104,9 @@ pub fn part_01(contents: &Vec<&str>) -> String {
 }
 
 pub fn part_02(contents: &Vec<&str>) -> String {
-    let mut item_rows: Vec<Vec<String>> = vec![];
-    let mut commands: Vec<Vec<usize>> = vec![];
-    for line in contents {
-        if line.contains("[") {
-            let line_data = parse_crate_line(line);
-            item_rows.push(line_data);
-        } else if line.contains("move") {
-            let mut cmd: Vec<usize> = vec![];
-            for capture in Regex::new(r"\w+\s\d+\s?").unwrap().captures_iter(line) {
-                let cmd_part: Vec<&str> =
-                    capture.get(0).unwrap().as_str().trim().split(" ").collect();
-                cmd.push(cmd_part.get(1).unwrap().parse::<usize>().unwrap());
-            }
-            commands.push(cmd.clone());
-        }
-    }
-
-    let len = item_rows.iter().map(|r| r.len()).max().unwrap();
-    println!("len: {}", len);
-    let mut columns: Vec<Vec<String>> = vec![];
-
-    (0..len).into_iter().for_each(|n| {
-        let mut column: Vec<String> = Vec::new();
-        for row in &item_rows {
-            match &row.get(n) {
-                Some(v) => {
-                    if !v.is_empty() {
-                        column.push(v.to_string())
-                    }
-                }
-                None => (),
-            }
-        }
-
-        columns.push(column.clone());
-    });
-
+    let (item_rows, commands) = process_input_lines(contents);
+    let len = get_number_of_columns_from(&item_rows);
+    let mut columns = create_columns_from_rows(&item_rows);
     print_columns(&len, &columns);
 
     for cmd in commands {
