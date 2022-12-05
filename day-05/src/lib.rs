@@ -1,34 +1,14 @@
 mod crane_movers;
-use std::ops::Range;
+mod stacks;
+
+use regex::Regex;
 
 use crane_movers::{
     commands::move_command::CraneMoverCommand,
     cranes::{crane_mover_9000::CraneMover9000, crane_mover_9001::CraneMover9001},
     strategies::move_crane_strategy::MoveCraneStrategy,
 };
-use regex::Regex;
-
-pub struct CrateStack {
-    pub items: Vec<String>,
-}
-
-impl CrateStack {
-    pub fn new(items: Vec<String>) -> CrateStack {
-        CrateStack { items }
-    }
-
-    pub fn pop_range(&mut self, range: Range<usize>) -> Vec<String> {
-        self.items.drain(range).collect()
-    }
-
-    pub fn prepend(&mut self, item: String) {
-        self.items.insert(0, item);
-    }
-
-    pub fn prepend_many(&mut self, items: Vec<String>) {
-        self.items.splice(0..0, items);
-    }
-}
+use stacks::crate_stack::CrateStack;
 
 pub fn parse_crate_line(line: &str) -> Vec<String> {
     line.chars()
@@ -78,33 +58,10 @@ pub fn get_number_of_columns_from(rows: &Vec<Vec<String>>) -> usize {
     rows.iter().map(|r| r.len()).max().unwrap()
 }
 
-pub fn create_stacks_from_rows(item_rows: &Vec<Vec<String>>) -> Vec<CrateStack> {
-    let mut stacks: Vec<CrateStack> = vec![];
-    let len = get_number_of_columns_from(item_rows);
-
-    (0..len).into_iter().for_each(|n| {
-        let mut stack_items: Vec<String> = Vec::new();
-        for row in item_rows {
-            match &row.get(n) {
-                Some(v) => {
-                    if !v.is_empty() {
-                        stack_items.push(v.to_string())
-                    }
-                }
-                None => (),
-            }
-        }
-
-        stacks.push(CrateStack::new(stack_items.clone()));
-    });
-
-    stacks
-}
-
 pub fn get_topmost_item_from_each_stack(stacks: &Vec<CrateStack>) -> String {
     let mut items: Vec<&str> = vec![];
     for c in stacks {
-        items.push(c.items.get(0).unwrap());
+        items.push(c.first());
     }
 
     items
@@ -119,7 +76,7 @@ pub fn process_commands_and_return_the_topmost_item(
     input_lines: &Vec<&str>,
 ) -> String {
     let (item_rows, commands) = process_input_lines(input_lines);
-    let mut stacks = create_stacks_from_rows(&item_rows);
+    let mut stacks = CrateStack::from_rows(&item_rows);
 
     for command in commands {
         command.apply_using(crane, &mut stacks);
