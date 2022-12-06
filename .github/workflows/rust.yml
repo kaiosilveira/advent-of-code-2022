@@ -11,7 +11,18 @@ jobs:
   ci:
     runs-on: ubuntu-latest
     strategy:
-      matrix: { dir: ["./day-01", "./day-02", "./day-03", "./day-04", "./day-05"] }
+      matrix:
+        {
+          dir:
+            [
+              "./day-01",
+              "./day-02",
+              "./day-03",
+              "./day-04",
+              "./day-05",
+              "./day-06",
+            ],
+        }
     defaults:
       run:
         working-directory: ${{ matrix.dir }}
