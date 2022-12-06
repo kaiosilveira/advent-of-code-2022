@@ -21,32 +21,32 @@ fn create_report_groups(calorie_report: &Vec<&str>) -> Vec<Vec<i32>> {
     groups
 }
 
-fn reduce(arr: &Vec<i32>) -> i32 {
-    let mut total = 0;
-
-    for item in arr {
-        total += item;
-    }
-
-    total
-}
-
-pub fn find_top_n_elves_carrying_more_calories(report_data: Vec<&str>, take_top_n: usize) -> i32 {
+pub fn create_sorted_sum_of_calorie_reports(report_data: &Vec<&str>) -> Vec<i32> {
     if report_data.is_empty() {
-        return 0;
+        return vec![];
     }
 
-    let mut total_calorie_aggregator: Vec<i32> = vec![];
-    for group in create_report_groups(&report_data) {
-        let partial = reduce(&group);
-        total_calorie_aggregator.push(partial);
-    }
+    let mut total_calorie_aggregator: Vec<i32> = create_report_groups(&report_data)
+        .iter()
+        .map(|g| g.iter().fold(0, |a, b| a + b))
+        .collect();
 
     total_calorie_aggregator.sort();
     total_calorie_aggregator.reverse();
 
-    let top_n = &total_calorie_aggregator[0..take_top_n];
-    let total = reduce(&top_n.to_vec());
+    total_calorie_aggregator
+}
+
+pub fn find_the_elf_carrying_more_calories(report_data: &Vec<&str>) -> i32 {
+    let total_calorie_aggregator = create_sorted_sum_of_calorie_reports(report_data);
+    total_calorie_aggregator[0]
+}
+
+pub fn find_top_three_elves_carrying_more_calories(report_data: &Vec<&str>) -> i32 {
+    let total_calorie_aggregator = create_sorted_sum_of_calorie_reports(report_data);
+
+    let top_n = &total_calorie_aggregator[0..3];
+    let total = top_n.iter().fold(0, |a, b| a + b);
 
     total
 }
@@ -54,61 +54,26 @@ pub fn find_top_n_elves_carrying_more_calories(report_data: Vec<&str>, take_top_
 #[cfg(test)]
 mod tests {
     use super::*;
-
     #[test]
-    fn test_returns_zero_if_calorie_report_is_empty() {
-        let report_data = vec![];
-        let take_top_n = 1;
-
-        assert_eq!(
-            0,
-            find_top_n_elves_carrying_more_calories(report_data, take_top_n)
-        );
-    }
-
-    #[test]
-    fn test_returns_the_value_of_the_first_line_if_report_has_only_one_line() {
-        let report_data = vec!["1000"];
-        let take_top_n = 1;
-
-        assert_eq!(
-            1000,
-            find_top_n_elves_carrying_more_calories(report_data, take_top_n)
-        );
-    }
-
-    #[test]
-    fn test_returns_the_sum_of_the_lines_for_a_single_elf() {
-        let report_data = vec!["1000", "2000"];
-        let take_top_n = 1;
-
-        assert_eq!(
-            3000,
-            find_top_n_elves_carrying_more_calories(report_data, take_top_n)
-        );
-    }
-
-    #[test]
-    fn test_returns_the_elf_carrying_more_calories_if_there_are_multiple_elves() {
-        let report_data = vec!["1000", "2000", "", "500", "500"];
-        let take_top_n = 1;
-
-        assert_eq!(
-            3000,
-            find_top_n_elves_carrying_more_calories(report_data, take_top_n)
-        );
-    }
-
-    #[test]
-    fn test_returns_the_sum_of_top_three_elves_carrying_more_calories() {
-        let take_top_n = 3;
+    fn test_harness_for_part_one() {
         let report_data = vec![
-            "1000", "2000", "", "50", "50", "", "500", "500", "", "100", "100",
+            "1000", "2000", "3000", "", "4000", "", "5000", "6000", "", "7000", "8000", "9000", "",
+            "10000",
+        ];
+
+        assert_eq!(24000, find_the_elf_carrying_more_calories(&report_data));
+    }
+
+    #[test]
+    fn test_harness_for_part_two() {
+        let report_data = vec![
+            "1000", "2000", "3000", "", "4000", "", "5000", "6000", "", "7000", "8000", "9000", "",
+            "10000",
         ];
 
         assert_eq!(
-            4200,
-            find_top_n_elves_carrying_more_calories(report_data, take_top_n)
+            45000,
+            find_top_three_elves_carrying_more_calories(&report_data)
         );
     }
 }
