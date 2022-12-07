@@ -51,14 +51,15 @@ Each `day-n` project look similar, containing:
 
 The table below contains the solutions for all challenges solved so far.
 
-| day | title                   | implementation   | docs for part I | docs for part II |
-| --- | ----------------------- | ---------------- | --------------- | ---------------- |
-| #1  | Calorie counting        | [here](./day-01) | ✅              | ✅               |
-| #2  | Rock, paper, scissors   | [here](./day-02) | ✅              | ✅               |
-| #3  | Rucksack Reorganization | [here](./day-03) | ✅              | ✅               |
-| #4  | Camp Cleanup            | [here](./day-04) | ✅              | ✅               |
-| #5  | Supply Stacks           | [here](./day-05) | 🚧              | 🚧               |
-| #6  | Tuning Trouble          | [here](./day-06) | 🚧              | 🚧               |
+| day | title                       | implementation   | docs for part I | docs for part II |
+| --- | --------------------------- | ---------------- | --------------- | ---------------- |
+| #1  | Calorie counting            | [here](./day-01) | ✅              | ✅               |
+| #2  | Rock, paper, scissors ⭐️   | [here](./day-02) | ✅              | ✅               |
+| #3  | Rucksack Reorganization     | [here](./day-03) | ✅              | ✅               |
+| #4  | Camp Cleanup                | [here](./day-04) | ✅              | ✅               |
+| #5  | Supply Stacks ⭐️           | [here](./day-05) | 🚧              | 🚧               |
+| #6  | Tuning Trouble              | [here](./day-06) | 🚧              | 🚧               |
+| #7  | No Space Left On Device ⭐️ | [here](./day-07) | 🚧              | 🚧               |
 
 - ✅ = **done** / **stable**
 - 🚧 = **WIP**
