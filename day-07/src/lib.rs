@@ -105,6 +105,30 @@ impl DirRegistry {
     }
 }
 
+fn compute_new_cwd(target_dir: String, cwd: &str) -> String {
+    if target_dir == ".." {
+        let mut cwd_parts: Vec<&str> = cwd.split("/").filter(|p| p != &"").collect();
+        cwd_parts.pop();
+
+        let mut new_cwd = String::from("/");
+        new_cwd.push_str(&cwd_parts.join("/"));
+
+        new_cwd
+    } else {
+        let mut fully_qualified_target_dir = cwd.clone().to_string();
+        if target_dir != "/" {
+            if cwd != "/" {
+                fully_qualified_target_dir.push_str("/");
+            }
+
+            fully_qualified_target_dir.push_str(&target_dir);
+        }
+
+        println!("cd {}", fully_qualified_target_dir);
+        fully_qualified_target_dir
+    }
+}
+
 fn process_cmd_line_session(input: &Vec<&str>) -> DirRegistry {
     let mut registry = DirRegistry::new(None);
     let mut cwd = String::from("/");
@@ -113,29 +137,7 @@ fn process_cmd_line_session(input: &Vec<&str>) -> DirRegistry {
         if line.contains("$ cd") {
             let parts: Vec<&str> = line.split(" ").collect();
             let target_dir = parts.get(2).unwrap().to_string();
-            if target_dir == ".." {
-                let mut cwd_parts: Vec<&str> = cwd.split("/").filter(|p| p != &"").collect();
-                cwd_parts.pop();
-
-                let mut new_cwd = String::from("/");
-                new_cwd.push_str(&cwd_parts.join("/"));
-
-                println!(".. ({} -> {})", cwd, new_cwd);
-                cwd = new_cwd;
-                println!("pwd: {}", &cwd);
-            } else {
-                let mut fully_qualified_target_dir = cwd.clone();
-                if target_dir != "/" {
-                    if cwd != "/" {
-                        fully_qualified_target_dir.push_str("/");
-                    }
-
-                    fully_qualified_target_dir.push_str(&target_dir);
-                }
-
-                println!("cd {}", fully_qualified_target_dir);
-                cwd = fully_qualified_target_dir;
-            }
+            cwd = compute_new_cwd(target_dir, &cwd);
         } else if line.contains("$ ls") {
             println!("ls {}", cwd);
         } else if Regex::new(r"\d+\s\w+").unwrap().is_match(line) {
