@@ -135,14 +135,14 @@ pub fn find_dir_to_delete(input: &Vec<&str>) -> usize {
     let available_space = disk_space - consumed_space;
     let needed_space = required_space_for_update - available_space;
 
-    let total = dir_registry
+    let min = dir_registry
         .iter()
         .map(|d| d.get_size(&dir_registry))
         .filter(|s| s > &needed_space)
         .min()
         .unwrap();
 
-    total
+    min
 }
 
 #[cfg(test)]
