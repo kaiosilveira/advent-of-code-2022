@@ -6,7 +6,7 @@ pub struct File {
     pub size: usize,
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct Subdirectory {
     pub name: String,
     pub parent_name: Option<String>,
@@ -15,7 +15,11 @@ pub struct Subdirectory {
 }
 
 impl File {
-    pub fn new(name: String, size: usize) -> File {
+    pub fn from_string(str: &str) -> File {
+        let parts: Vec<&str> = str.split(" ").collect();
+        let size = parts.get(0).unwrap().parse::<usize>().unwrap();
+        let name = parts.get(1).unwrap().to_string();
+
         File { name, size }
     }
 }
@@ -45,81 +49,110 @@ impl Subdirectory {
     }
 }
 
-fn process_cmd_line_session(input: &Vec<&str>) -> Vec<Subdirectory> {
-    let mut dir_registry: Vec<Subdirectory> =
-        vec![Subdirectory::new(String::from("/"), None, vec![], vec![])];
+pub struct DirRegistry {
+    pub items: Vec<Subdirectory>,
+}
 
+impl DirRegistry {
+    pub fn new(items: Option<Vec<Subdirectory>>) -> DirRegistry {
+        DirRegistry {
+            items: match items {
+                Some(v) => v,
+                None => vec![Subdirectory::new(String::from("/"), None, vec![], vec![])],
+            },
+        }
+    }
+
+    pub fn append_dir(&mut self, cwd: &str, dir: Subdirectory) {
+        self.items
+            .iter_mut()
+            .find(|d| d.name == cwd)
+            .unwrap()
+            .directories
+            .push(dir.name.clone());
+
+        self.items.push(dir);
+    }
+
+    pub fn append_file(&mut self, cwd: &str, file: File) {
+        self.items
+            .iter_mut()
+            .find(|d| d.name == cwd)
+            .unwrap()
+            .files
+            .push(file);
+    }
+}
+
+fn process_cmd_line_session(input: &Vec<&str>) -> DirRegistry {
+    let mut registry = DirRegistry::new(None);
     let mut cwd = String::from("/");
 
     for line in input {
         let parts: Vec<&str> = line.split(" ").collect();
         if line.contains("$ cd") {
             let target_dir = parts.get(2).unwrap().to_string();
-            println!("navigating to {} from {}", target_dir, cwd);
-
             if target_dir == ".." {
-                cwd = dir_registry
-                    .iter_mut()
-                    .find(|d| d.name == cwd)
-                    .unwrap()
-                    .parent_name
-                    .as_ref()
-                    .unwrap()
-                    .to_string();
+                let mut cwd_parts: Vec<&str> = cwd.split("/").filter(|p| p != &"").collect();
+                cwd_parts.pop();
+
+                let mut new_cwd = String::from("/");
+                new_cwd.push_str(&cwd_parts.join("/"));
+
+                println!(".. ({} -> {})", cwd, new_cwd);
+                cwd = new_cwd;
+                println!("pwd: {}", &cwd);
             } else {
-                cwd = dir_registry
-                    .iter_mut()
-                    .find(|d| d.name == target_dir)
-                    .unwrap()
-                    .name
-                    .to_string();
+                let mut fully_qualified_target_dir = cwd.clone();
+                if target_dir != "/" {
+                    if cwd != "/" {
+                        fully_qualified_target_dir.push_str("/");
+                    }
+
+                    fully_qualified_target_dir.push_str(&target_dir);
+                }
+
+                println!("cd {}", fully_qualified_target_dir);
+                cwd = fully_qualified_target_dir;
             }
         } else if line.contains("$ ls") {
-            println!("Running ls command on {}...", cwd);
+            println!("ls {}", cwd);
         } else if Regex::new(r"\d+\s\w+").unwrap().is_match(line) {
-            let file_size = parts.get(0).unwrap().parse::<usize>().unwrap();
-            let file_name = parts.get(1).unwrap().to_string();
-
-            let file = File::new(file_name, file_size);
-
-            println!("Found file: {:?}", file);
-
-            dir_registry
-                .iter_mut()
-                .find(|d| d.name == cwd)
-                .unwrap()
-                .files
-                .push(file);
+            let file = File::from_string(line);
+            println!("- {}", &file.name);
+            registry.append_file(&cwd, file.clone());
         } else if line.contains("dir") {
-            let dir_name = parts.get(1).unwrap().to_string();
+            let mut dir_name = String::from("").to_owned();
+            dir_name.push_str(&cwd);
+
+            if cwd != "/" {
+                dir_name.push_str("/");
+            }
+
+            dir_name.push_str(&parts.get(1).unwrap().to_string());
+
             let dir = Subdirectory::new(
                 dir_name.clone(),
                 Some(String::from(cwd.clone())),
                 vec![],
                 vec![],
             );
-            println!("Found dir: {:?}", dir);
 
-            dir_registry
-                .iter_mut()
-                .find(|d| d.name == cwd)
-                .unwrap()
-                .directories
-                .push(dir_name.clone());
-
-            dir_registry.push(dir);
+            println!("- {}", dir.name);
+            registry.append_dir(&cwd, dir.clone());
         }
     }
 
-    dir_registry
+    registry
 }
 
 pub fn find_total_sizes_of_directories(input: &Vec<&str>) -> usize {
     let dir_registry = process_cmd_line_session(input);
 
     let total = dir_registry
+        .items
         .iter()
-        .map(|d| d.get_size(&dir_registry))
+        .map(|d| d.get_size(&dir_registry.items))
         .filter(|s| s <= &100000)
         .fold(0, |a, b| a + b);
 
@@ -131,13 +164,14 @@ pub fn find_dir_to_delete(input: &Vec<&str>) -> usize {
 
     let disk_space = 70000000;
     let required_space_for_update = 30000000;
-    let consumed_space = dir_registry[0].get_size(&dir_registry);
+    let consumed_space = dir_registry.items[0].get_size(&dir_registry.items);
     let available_space = disk_space - consumed_space;
     let needed_space = required_space_for_update - available_space;
 
     let min = dir_registry
+        .items
         .iter()
-        .map(|d| d.get_size(&dir_registry))
+        .map(|d| d.get_size(&dir_registry.items))
         .filter(|s| s > &needed_space)
         .min()
         .unwrap();
