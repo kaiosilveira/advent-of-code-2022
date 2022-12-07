@@ -1,169 +1,27 @@
+mod file_system;
+use file_system::{directory::*, file::*, registry::*, utils::compute_new_cwd_from};
+
 use regex::Regex;
-
-#[derive(Debug, Clone)]
-pub struct File {
-    pub name: String,
-    pub size: usize,
-}
-
-#[derive(Debug, Clone)]
-pub struct Subdirectory {
-    pub name: String,
-    pub parent_name: Option<String>,
-    pub files: Vec<File>,
-    pub directories: Vec<String>,
-}
-
-impl File {
-    pub fn from_string(s: &str) -> File {
-        let parts: Vec<&str> = s.split(" ").collect();
-        let size = parts.get(0).unwrap().parse::<usize>().unwrap();
-        let name = parts.get(1).unwrap().to_string();
-
-        File { name, size }
-    }
-}
-
-impl Subdirectory {
-    pub fn new(
-        name: String,
-        parent_name: Option<String>,
-        files: Vec<File>,
-        directories: Vec<String>,
-    ) -> Subdirectory {
-        Subdirectory {
-            name,
-            parent_name,
-            files,
-            directories,
-        }
-    }
-
-    pub fn get_size(&self, dir_registry: &Vec<Subdirectory>) -> usize {
-        self.files.iter().map(|f| f.size).fold(0, |a, b| a + b)
-            + dir_registry
-                .iter()
-                .filter(|d| self.directories.contains(&d.name))
-                .map(|d| d.get_size(dir_registry))
-                .fold(0, |a, b| a + b)
-    }
-
-    pub fn from_string(s: &str, cwd: &str) -> Subdirectory {
-        let parts: Vec<&str> = s.split(" ").collect();
-        let mut dir_name = String::from("").to_owned();
-        dir_name.push_str(&cwd);
-
-        if cwd != "/" {
-            dir_name.push_str("/");
-        }
-
-        dir_name.push_str(&parts.get(1).unwrap().to_string());
-
-        let dir = Subdirectory::new(
-            dir_name.clone(),
-            Some(String::from(cwd.clone())),
-            vec![],
-            vec![],
-        );
-
-        dir
-    }
-}
-
-pub struct DirRegistry {
-    pub items: Vec<Subdirectory>,
-}
-
-impl DirRegistry {
-    pub fn new(items: Option<Vec<Subdirectory>>) -> DirRegistry {
-        DirRegistry {
-            items: match items {
-                Some(v) => v,
-                None => vec![Subdirectory::new(String::from("/"), None, vec![], vec![])],
-            },
-        }
-    }
-
-    pub fn append_dir(&mut self, cwd: &str, dir: Subdirectory) {
-        self.items
-            .iter_mut()
-            .find(|d| d.name == cwd)
-            .unwrap()
-            .directories
-            .push(dir.name.clone());
-
-        self.items.push(dir);
-    }
-
-    pub fn append_file(&mut self, cwd: &str, file: File) {
-        self.items
-            .iter_mut()
-            .find(|d| d.name == cwd)
-            .unwrap()
-            .files
-            .push(file);
-    }
-
-    pub fn get_dir_sizes_below_threshold(&self, threshold: &usize) -> Vec<usize> {
-        self.items
-            .iter()
-            .map(|d| d.get_size(&self.items))
-            .filter(|s| s <= threshold)
-            .collect::<Vec<usize>>()
-    }
-
-    pub fn get_dir_sizes_above_threshold(&self, threshold: &usize) -> Vec<usize> {
-        self.items
-            .iter()
-            .map(|d| d.get_size(&self.items))
-            .filter(|s| s > threshold)
-            .collect::<Vec<usize>>()
-    }
-}
-
-fn compute_new_cwd(target_dir: String, cwd: &str) -> String {
-    if target_dir == ".." {
-        let mut cwd_parts: Vec<&str> = cwd.split("/").filter(|p| p != &"").collect();
-        cwd_parts.pop();
-
-        let mut new_cwd = String::from("/");
-        new_cwd.push_str(&cwd_parts.join("/"));
-
-        new_cwd
-    } else {
-        let mut fully_qualified_target_dir = cwd.clone().to_string();
-        if target_dir != "/" {
-            if cwd != "/" {
-                fully_qualified_target_dir.push_str("/");
-            }
-
-            fully_qualified_target_dir.push_str(&target_dir);
-        }
-
-        println!("cd {}", fully_qualified_target_dir);
-        fully_qualified_target_dir
-    }
-}
 
 fn process_cmd_line_session(input: &Vec<&str>) -> DirRegistry {
     let mut registry = DirRegistry::new(None);
     let mut cwd = String::from("/");
 
+    let file_name_pattern_regex = Regex::new(r"\d+\s\w+").unwrap();
     for line in input {
-        if line.contains("$ cd") {
-            let parts: Vec<&str> = line.split(" ").collect();
-            let target_dir = parts.get(2).unwrap().to_string();
-            cwd = compute_new_cwd(target_dir, &cwd);
-        } else if line.contains("$ ls") {
-            println!("ls {}", cwd);
-        } else if Regex::new(r"\d+\s\w+").unwrap().is_match(line) {
-            let file = File::from_string(line);
-            println!("- {}", &file.name);
-            registry.append_file(&cwd, file.clone());
-        } else if line.contains("dir") {
-            let dir = Subdirectory::from_string(&line, &cwd);
-            println!("- {}", dir.name);
-            registry.append_dir(&cwd, dir);
+        match line {
+            x if x.contains("$ cd") => cwd = compute_new_cwd_from(line, &cwd),
+            x if x.contains("dir") => {
+                let dir = Subdirectory::from_string(&line, &cwd);
+                println!("- {}", dir.name);
+                registry.append_dir(&cwd, dir);
+            }
+            x if file_name_pattern_regex.is_match(x) => {
+                let file = File::from_string(line);
+                println!("- {}", &file.name);
+                registry.append_file(&cwd, file.clone());
+            }
+            _ => (),
         }
     }
 
