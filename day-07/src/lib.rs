@@ -103,6 +103,22 @@ impl DirRegistry {
             .files
             .push(file);
     }
+
+    pub fn get_dir_sizes_below_threshold(&self, threshold: &usize) -> Vec<usize> {
+        self.items
+            .iter()
+            .map(|d| d.get_size(&self.items))
+            .filter(|s| s <= threshold)
+            .collect::<Vec<usize>>()
+    }
+
+    pub fn get_dir_sizes_above_threshold(&self, threshold: &usize) -> Vec<usize> {
+        self.items
+            .iter()
+            .map(|d| d.get_size(&self.items))
+            .filter(|s| s > threshold)
+            .collect::<Vec<usize>>()
+    }
 }
 
 fn compute_new_cwd(target_dir: String, cwd: &str) -> String {
@@ -158,10 +174,8 @@ pub fn find_total_sizes_of_directories(input: &Vec<&str>) -> usize {
     let dir_registry = process_cmd_line_session(input);
 
     let total = dir_registry
-        .items
+        .get_dir_sizes_below_threshold(&100000)
         .iter()
-        .map(|d| d.get_size(&dir_registry.items))
-        .filter(|s| s <= &100000)
         .fold(0, |a, b| a + b);
 
     total
@@ -176,15 +190,11 @@ pub fn find_dir_to_delete(input: &Vec<&str>) -> usize {
     let available_space = disk_space - consumed_space;
     let needed_space = required_space_for_update - available_space;
 
-    let min = dir_registry
-        .items
+    *dir_registry
+        .get_dir_sizes_above_threshold(&needed_space)
         .iter()
-        .map(|d| d.get_size(&dir_registry.items))
-        .filter(|s| s > &needed_space)
         .min()
-        .unwrap();
-
-    min
+        .unwrap()
 }
 
 #[cfg(test)]
