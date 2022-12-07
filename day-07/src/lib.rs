@@ -15,8 +15,8 @@ pub struct Subdirectory {
 }
 
 impl File {
-    pub fn from_string(str: &str) -> File {
-        let parts: Vec<&str> = str.split(" ").collect();
+    pub fn from_string(s: &str) -> File {
+        let parts: Vec<&str> = s.split(" ").collect();
         let size = parts.get(0).unwrap().parse::<usize>().unwrap();
         let name = parts.get(1).unwrap().to_string();
 
@@ -46,6 +46,27 @@ impl Subdirectory {
                 .filter(|d| self.directories.contains(&d.name))
                 .map(|d| d.get_size(dir_registry))
                 .fold(0, |a, b| a + b)
+    }
+
+    pub fn from_string(s: &str, cwd: &str) -> Subdirectory {
+        let parts: Vec<&str> = s.split(" ").collect();
+        let mut dir_name = String::from("").to_owned();
+        dir_name.push_str(&cwd);
+
+        if cwd != "/" {
+            dir_name.push_str("/");
+        }
+
+        dir_name.push_str(&parts.get(1).unwrap().to_string());
+
+        let dir = Subdirectory::new(
+            dir_name.clone(),
+            Some(String::from(cwd.clone())),
+            vec![],
+            vec![],
+        );
+
+        dir
     }
 }
 
@@ -89,8 +110,8 @@ fn process_cmd_line_session(input: &Vec<&str>) -> DirRegistry {
     let mut cwd = String::from("/");
 
     for line in input {
-        let parts: Vec<&str> = line.split(" ").collect();
         if line.contains("$ cd") {
+            let parts: Vec<&str> = line.split(" ").collect();
             let target_dir = parts.get(2).unwrap().to_string();
             if target_dir == ".." {
                 let mut cwd_parts: Vec<&str> = cwd.split("/").filter(|p| p != &"").collect();
@@ -122,24 +143,9 @@ fn process_cmd_line_session(input: &Vec<&str>) -> DirRegistry {
             println!("- {}", &file.name);
             registry.append_file(&cwd, file.clone());
         } else if line.contains("dir") {
-            let mut dir_name = String::from("").to_owned();
-            dir_name.push_str(&cwd);
-
-            if cwd != "/" {
-                dir_name.push_str("/");
-            }
-
-            dir_name.push_str(&parts.get(1).unwrap().to_string());
-
-            let dir = Subdirectory::new(
-                dir_name.clone(),
-                Some(String::from(cwd.clone())),
-                vec![],
-                vec![],
-            );
-
+            let dir = Subdirectory::from_string(&line, &cwd);
             println!("- {}", dir.name);
-            registry.append_dir(&cwd, dir.clone());
+            registry.append_dir(&cwd, dir);
         }
     }
 
