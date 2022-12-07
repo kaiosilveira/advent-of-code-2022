@@ -59,7 +59,9 @@ The table below contains the solutions for all challenges solved so far.
 | #4  | Camp Cleanup                | [here](./day-04) | ✅              | ✅               |
 | #5  | Supply Stacks ⭐️           | [here](./day-05) | 🚧              | 🚧               |
 | #6  | Tuning Trouble              | [here](./day-06) | 🚧              | 🚧               |
-| #7  | No Space Left On Device ⭐️ | [here](./day-07) | 🚧              | 🚧               |
+| #7  | No Space Left On Device ⭐️ | [here](./day-07) | ❌              | ❌               |
 
 - ✅ = **done** / **stable**
 - 🚧 = **WIP**
+- ❌ = **Not yet available**
+- ⭐️ = **One of my favorites**
