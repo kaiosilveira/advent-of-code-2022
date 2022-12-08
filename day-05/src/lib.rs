@@ -3,18 +3,18 @@ mod stacks;
 mod utils;
 
 use crane_movers::{
-    cranes::{crane_mover_9000::CraneMover9000, crane_mover_9001::CraneMover9001},
-    strategies::move_crane_strategy::MoveCraneStrategy,
+    cranes::{crate_mover_9000::CrateMover9000, crate_mover_9001::CrateMover9001},
+    strategies::move_crate_strategy::MoveCrateStrategy,
 };
 use stacks::crate_stack::CrateStack;
 use utils::input_parsing::{get_number_of_columns_from, process_input_lines};
 
 pub fn move_crates_one_by_one(input_lines: &Vec<&str>) -> String {
-    process_commands_and_return_the_topmost_item(&CraneMover9000::new(), input_lines)
+    process_commands_and_return_the_topmost_item(&CrateMover9000::new(), input_lines)
 }
 
 pub fn move_multiple_crates_at_once(input_lines: &Vec<&str>) -> String {
-    process_commands_and_return_the_topmost_item(&CraneMover9001::new(), input_lines)
+    process_commands_and_return_the_topmost_item(&CrateMover9001::new(), input_lines)
 }
 
 pub fn get_topmost_item_from_each_stack(stacks: &Vec<CrateStack>) -> String {
@@ -31,7 +31,7 @@ pub fn get_topmost_item_from_each_stack(stacks: &Vec<CrateStack>) -> String {
 }
 
 pub fn process_commands_and_return_the_topmost_item(
-    crane: &impl MoveCraneStrategy,
+    crane: &impl MoveCrateStrategy,
     input_lines: &Vec<&str>,
 ) -> String {
     let (item_rows, commands) = process_input_lines(input_lines);

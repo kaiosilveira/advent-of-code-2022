@@ -1,6 +1,6 @@
 use regex::Regex;
 
-use crate::crane_movers::commands::move_command::CraneMoverCommand;
+use crate::crane_movers::commands::move_command::MoveCrateCommand;
 
 pub fn parse_crate_line(line: &str) -> Vec<String> {
     line.chars()
@@ -22,9 +22,9 @@ pub fn parse_command_line(line: &str) -> Vec<usize> {
     cmd
 }
 
-pub fn process_input_lines(lines: &Vec<&str>) -> (Vec<Vec<String>>, Vec<CraneMoverCommand>) {
+pub fn process_input_lines(lines: &Vec<&str>) -> (Vec<Vec<String>>, Vec<MoveCrateCommand>) {
     let mut item_rows: Vec<Vec<String>> = vec![];
-    let mut commands: Vec<CraneMoverCommand> = vec![];
+    let mut commands: Vec<MoveCrateCommand> = vec![];
     for line in lines {
         if line.contains("[") {
             let line_data = parse_crate_line(line);
@@ -35,7 +35,7 @@ pub fn process_input_lines(lines: &Vec<&str>) -> (Vec<Vec<String>>, Vec<CraneMov
             let origin_stack_position = *cmd.get(1).unwrap();
             let target_stack_position = *cmd.get(2).unwrap();
 
-            commands.push(CraneMoverCommand::new(
+            commands.push(MoveCrateCommand::new(
                 crane_quantity,
                 origin_stack_position,
                 target_stack_position,

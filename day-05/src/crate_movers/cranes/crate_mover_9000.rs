@@ -1,25 +1,25 @@
 use crate::{
     crane_movers::{
-        commands::move_command::CraneMoverCommand,
-        strategies::move_crane_strategy::MoveCraneStrategy,
+        commands::move_command::MoveCrateCommand,
+        strategies::move_crate_strategy::MoveCrateStrategy,
     },
     CrateStack,
 };
 
-pub struct CraneMover9000 {
+pub struct CrateMover9000 {
     pub model: String,
 }
 
-impl CraneMover9000 {
-    pub fn new() -> CraneMover9000 {
-        CraneMover9000 {
+impl CrateMover9000 {
+    pub fn new() -> CrateMover9000 {
+        CrateMover9000 {
             model: String::from("Crane Mover 9000"),
         }
     }
 }
 
-impl MoveCraneStrategy for CraneMover9000 {
-    fn process_move_command(&self, cmd: &CraneMoverCommand, stacks: &mut Vec<CrateStack>) {
+impl MoveCrateStrategy for CrateMover9000 {
+    fn process_move_command(&self, cmd: &MoveCrateCommand, stacks: &mut Vec<CrateStack>) {
         let number_of_items = cmd.crate_quantity;
         let from = cmd.origin_stack_position;
         let to = cmd.target_stack_position;
