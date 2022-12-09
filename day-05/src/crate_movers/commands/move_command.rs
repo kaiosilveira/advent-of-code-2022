@@ -1,4 +1,4 @@
-use crate::{crane_movers::strategies::move_crate_strategy::MoveCrateStrategy, CrateStack};
+use crate::{crate_movers::strategies::move_crate_strategy::MoveCrateStrategy, CrateStack};
 
 pub struct MoveCrateCommand {
     pub crate_quantity: usize,

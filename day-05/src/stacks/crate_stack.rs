@@ -34,11 +34,15 @@ impl CrateStack {
         stacks
     }
 
+    pub fn pop(&mut self) -> String {
+        self.items.drain(0..0).collect()
+    }
+
     pub fn pop_range(&mut self, range: Range<usize>) -> Vec<String> {
         self.items.drain(range).collect()
     }
 
-    pub fn prepend(&mut self, item: String) {
+    pub fn push(&mut self, item: String) {
         self.items.insert(0, item);
     }
 

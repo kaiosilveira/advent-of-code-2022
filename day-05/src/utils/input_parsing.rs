@@ -1,6 +1,6 @@
 use regex::Regex;
 
-use crate::crane_movers::commands::move_command::MoveCrateCommand;
+use crate::crate_movers::commands::move_command::MoveCrateCommand;
 
 pub fn parse_crate_line(line: &str) -> Vec<String> {
     line.chars()

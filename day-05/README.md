@@ -92,11 +92,13 @@ These lines represent the commands we need to apply on the stacks. Examples are:
 **Lines with stack numbers**
 These lines contain numbers for each stack. An example is `1   2   3`.
 
-To process these lines, we can introduce the concept of a "column". A column is a sequence of three characters, followed by trailing a space. For example, we can say that `[Z] [M] [P]` has three columns: `[Z] `, `[M] ` and `[P]`. Based on this observation, we can collect all the chars of a line into a vector and then split it into chunks of four:
+To process stack lines, we can introduce the concept of "columns". A column is a sequence of three characters, followed by a trailing space. For example, we can say that `[Z] [M] [P]` has three columns: `[Z] `, `[M] ` and `[P]`. Based on this observation, we can collect all the chars of a line into a vector and then split it into chunks of four:
 
 ```rust
 line.chars().collect::<Vec<char>>().chunks(4)
 ```
+
+_Note: The last column will contain only 3 characters, but this approach protects us from this, so that's all fine_
 
 Then, we just need to get rid of the trailing space and convert the chars back into a string. The final code for this part looks like:
 
@@ -126,7 +128,7 @@ mod tests {
 }
 ```
 
-Next up, let's handle the liens representing commands. Each command has the same pattern: `move {quantity} from {origin} to {target}`, where `quantity`, `origin` and `target` are numbers. We can capture this pattern in a regular expression, using the `regex` crate, to grab the command parts and store it into a vector:
+Next up, let's handle the lines representing commands. Each command has the same pattern: `move {quantity} from {origin} to {target}`, where `quantity`, `origin` and `target` are numbers. We can capture this pattern in a regular expression, using the `regex` crate, to grab the command parts and store it into a vector:
 
 ```rust
 pub fn parse_command_line(line: &str) -> Vec<usize> {
@@ -251,9 +253,51 @@ impl CrateStack {
 }
 ```
 
+We also need some utility methods on the stack to handle common operations, specially popping items out of and pushing items onto it.
+
+Last, but not least, we need a crane to actually process each command. We can implement a `Crane` structure:
+
+```rust
+pub struct Crane {
+    pub model: String,
+}
+
+impl Crane {
+    pub fn new() -> Crane {
+        Crane {
+            model: String::from("Generic Crane"),
+        }
+    }
+}
+```
+
+A crane should be able to process a `move` command on a list of `stacks`:
+
+```rust
+pub fn process_move_command(&self, cmd: &MoveCrateCommand, stacks: &mut Vec<CrateStack>) {
+    let number_of_items = cmd.crate_quantity;
+    let from = cmd.origin_stack_position;
+    let to = cmd.target_stack_position;
+
+    let origin = stacks.get_mut(from - 1).unwrap();
+    let items_to_move: Vec<String> = origin.pop_range(0..number_of_items);
+
+    println!(
+        "Moving {} items ({:?}) from {} to {}",
+        number_of_items, items_to_move, from, to
+    );
+
+    let target = stacks.get_mut(to - 1).unwrap();
+    for item in items_to_move {
+        target.prepend(item);
+    }
+}
+```
+
 ---
 
 WIP 👇🏽
+
 - `MoveCraneStrategy`:
 
 ```rust
@@ -294,29 +338,6 @@ pub struct CrateStack {
 impl CrateStack {
     pub fn new(items: Vec<String>) -> CrateStack {
         CrateStack { items }
-    }
-
-    pub fn from_rows(item_rows: &Vec<Vec<String>>) -> Vec<CrateStack> {
-        let mut stacks: Vec<CrateStack> = vec![];
-        let len = get_number_of_columns_from(item_rows);
-
-        (0..len).into_iter().for_each(|n| {
-            let mut stack_items: Vec<String> = Vec::new();
-            for row in item_rows {
-                match &row.get(n) {
-                    Some(v) => {
-                        if !v.is_empty() {
-                            stack_items.push(v.to_string())
-                        }
-                    }
-                    None => (),
-                }
-            }
-
-            stacks.push(CrateStack::new(stack_items.clone()));
-        });
-
-        stacks
     }
 
     pub fn pop_range(&mut self, range: Range<usize>) -> Vec<String> {

@@ -1,5 +1,5 @@
 use crate::{
-    crane_movers::{
+    crate_movers::{
         commands::move_command::MoveCrateCommand,
         strategies::move_crate_strategy::MoveCrateStrategy,
     },
@@ -34,7 +34,7 @@ impl MoveCrateStrategy for CrateMover9000 {
 
         let target = stacks.get_mut(to - 1).unwrap();
         for item in items_to_move {
-            target.prepend(item);
+            target.push(item);
         }
     }
 }

@@ -1,8 +1,8 @@
-mod crane_movers;
+mod crate_movers;
 mod stacks;
 mod utils;
 
-use crane_movers::{
+use crate_movers::{
     cranes::{crate_mover_9000::CrateMover9000, crate_mover_9001::CrateMover9001},
     strategies::move_crate_strategy::MoveCrateStrategy,
 };
