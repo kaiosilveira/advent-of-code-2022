@@ -60,8 +60,8 @@ The table below contains the solutions for all challenges solved so far.
 | #5  | Supply Stacks ⭐️           | [here](./day-05) | 🚧              | 🚧               |
 | #6  | Tuning Trouble              | [here](./day-06) | 🚧              | 🚧               |
 | #7  | No Space Left On Device ⭐️ | [here](./day-07) | 🚧              | 🚧               |
-| #8  | Treetop Tree House          | [here](./day-08) | ❌              | ❌               |
-| #8  | Rope Bridge                 | [here](./day-09) | ❌              | ❌               |
+| #8  | Treetop Tree House          | [here](./day-08) | 🚧              | 🚧               |
+| #8  | Rope Bridge                 | [here](./day-09) | 🚧              | 🚧               |
 
 - ✅ = **done** / **stable**
 - 🚧 = **WIP**
