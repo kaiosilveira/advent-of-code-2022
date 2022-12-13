@@ -43,7 +43,7 @@ This monorepo is structured to hold all the code for all days of the advent of c
 Each `day-n` project look similar, containing:
 
 - Cargo related config files
-- a README with the challenge URL, description and collapsable solution blocks (with "**See solution**" as its title)
+- a `README.md` with the challenge URL, description and collapsable solution blocks (with "**See solution**" as its title)
 - a `sample.txt` file, containing the example described in the challenge
 - a `input.txt` file, containing the actual input provided by the challenge
 - a `src/lib.rs` file, containing the actual implementation and tests
@@ -64,10 +64,10 @@ The table below contains the solutions for all challenges solved so far.
 | #7  | No Space Left On Device ⭐️ | [here](./day-07) | 🚧              | 🚧               |
 | #8  | Treetop Tree House          | [here](./day-08) | 🚧              | 🚧               |
 | #9  | Rope Bridge                 | [here](./day-09) | 🚧              | 🚧               |
-| #10 | Cathode-Ray Tube            | [here](./day-09) | 🚧              | 🚧               |
-| #11 | Monkey in the Middle        | [here](./day-09) | ❌              | ❌               |
-| #12 | Hill Climbing Algorithm     | [here](./day-09) | ❌              | ❌               |
-| #13 | Distress Signal             | [here](./day-09) | ❌              | ❌               |
+| #10 | Cathode-Ray Tube            | [here](./day-10) | 🚧              | 🚧               |
+| #11 | Monkey in the Middle        | [here](./day-11) | ❌              | ❌               |
+| #12 | Hill Climbing Algorithm     | [here](./day-12) | ❌              | ❌               |
+| #13 | Distress Signal             | [here](./day-13) | ❌              | ❌               |
 
 - ✅ = **done** / **stable**
 - 🚧 = **WIP**
