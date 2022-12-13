@@ -63,6 +63,9 @@ The table below contains the solutions for all challenges solved so far.
 | #8  | Treetop Tree House          | [here](./day-08) | 🚧              | 🚧               |
 | #9  | Rope Bridge                 | [here](./day-09) | 🚧              | 🚧               |
 | #10 | Cathode-Ray Tube            | [here](./day-09) | 🚧              | 🚧               |
+| #11 | Monkey in the Middle        | [here](./day-09) | ❌              | ❌               |
+| #12 | Hill Climbing Algorithm     | [here](./day-09) | ❌              | ❌               |
+| #13 | Distress Signal             | [here](./day-09) | ❌              | ❌               |
 
 - ✅ = **done** / **stable**
 - 🚧 = **WIP**
