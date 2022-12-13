@@ -1,15 +1,15 @@
-const { isOrdered } = require("./solution");
+const { isOrdered } = require('./solution');
 
-describe("checkOrder", () => {
-  describe("both sides are lists", () => {
-    it("should return true if the first left side item is smaller", () => {
+describe('checkOrder', () => {
+  describe('both sides are lists', () => {
+    it('should return true if the first left side item is smaller', () => {
       const left = [1, 1, 3, 1, 1];
       const right = [1, 1, 5, 1, 1];
 
       expect(isOrdered(left, right)).toBe(true);
     });
 
-    it("should return false if the first left side item is greater than the item in the same position in the right side", () => {
+    it('should return false if the first left side item is greater than the item in the same position in the right side', () => {
       const left = [1, 1, 6, 1, 1];
       const right = [1, 1, 5, 1, 1];
 
@@ -17,15 +17,15 @@ describe("checkOrder", () => {
     });
   });
 
-  describe("nested lists", () => {
-    it("should recursively compare list items with list items, using the same rules", () => {
+  describe('nested lists', () => {
+    it('should recursively compare list items with list items, using the same rules', () => {
       const left = [[1], 2, 3, 4];
       const right = [[1], 4];
 
       expect(isOrdered(left, right)).toBe(true);
     });
 
-    it("should compare list items with list items", () => {
+    it('should compare list items with list items', () => {
       const left = [[2], 2, 3, 4];
       const right = [[1], 2, 5, 5];
 
@@ -33,22 +33,22 @@ describe("checkOrder", () => {
     });
   });
 
-  describe("mixed types", () => {
-    it("should parse the right side to a list and run the comparison again", () => {
+  describe('mixed types', () => {
+    it('should parse the right side to a list and run the comparison again', () => {
       const left = [[1], [2, 3, 4]];
       const right = [[1], 4];
 
       expect(isOrdered(left, right)).toBe(true);
     });
 
-    it("should parse the right side to a list and run the comparison again", () => {
+    it('should parse the right side to a list and run the comparison again', () => {
       const left = [[1], [5, 3, 4]];
       const right = [[1], 4];
 
       expect(isOrdered(left, right)).toBe(false);
     });
 
-    it("should parse the right side to a list and run the comparison again", () => {
+    it('should parse the right side to a list and run the comparison again', () => {
       const left = [9];
       const right = [[8, 7, 6]];
 
@@ -56,15 +56,15 @@ describe("checkOrder", () => {
     });
   });
 
-  describe("left side running out of items", () => {
-    it("should return true if left runs out of items with analysis status UNKNOWN", () => {
+  describe('left side running out of items', () => {
+    it('should return true if left runs out of items with analysis status UNKNOWN', () => {
       const left = [];
       const right = [3];
 
       expect(isOrdered(left, right)).toBe(true);
     });
 
-    it("should return true if left runs out of items with analysis status UNKNOWN", () => {
+    it('should return true if left runs out of items with analysis status UNKNOWN', () => {
       const left = [[4, 4], 4, 4];
       const right = [[4, 4], 4, 4, 4];
 
@@ -72,8 +72,8 @@ describe("checkOrder", () => {
     });
   });
 
-  describe("right side running out of items", () => {
-    it("should return true if right runs out of items with analysis status UNKNOWN", () => {
+  describe('right side running out of items', () => {
+    it('should return true if right runs out of items with analysis status UNKNOWN', () => {
       const left = [[[]]];
       const right = [[]];
 
@@ -81,15 +81,15 @@ describe("checkOrder", () => {
     });
   });
 
-  it("should return false", () => {
-    const left = [1, [2, [3, [4, [5, 6, 7]]]], 8, 9];
-    const right = [1, [2, [3, [4, [5, 6, 0]]]], 8, 9];
+  it('should check equality for empty sets', () => {
+    const left = [1, [], 4];
+    const right = [1, [], 3];
     expect(isOrdered(left, right)).toBe(false);
   });
 
-  it("edge case", () => {
-    const left = [1, [], 4];
-    const right = [1, [], 3];
+  it('should return false', () => {
+    const left = [1, [2, [3, [4, [5, 6, 7]]]], 8, 9];
+    const right = [1, [2, [3, [4, [5, 6, 0]]]], 8, 9];
     expect(isOrdered(left, right)).toBe(false);
   });
 });
