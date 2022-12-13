@@ -105,23 +105,6 @@ pub fn parse_cpu_instructions(input: &Vec<&str>) -> Vec<CPUInstruction> {
     pending_work
 }
 
-pub fn create_crt_screen_row() -> Vec<&'static str> {
-    "........................................"
-        .split("")
-        .collect()
-}
-
-pub fn create_crt_screen() -> Vec<Vec<&'static str>> {
-    vec![
-        create_crt_screen_row(),
-        create_crt_screen_row(),
-        create_crt_screen_row(),
-        create_crt_screen_row(),
-        create_crt_screen_row(),
-        create_crt_screen_row(),
-    ]
-}
-
 pub fn process_cpu_instructions<'a>(input: &Vec<&'a str>) -> (Vec<i32>, CRTScreen) {
     let mut crt_screen = CRTScreen::new();
     let mut sprite = Sprite::new();
