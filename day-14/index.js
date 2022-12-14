@@ -1,6 +1,6 @@
 const fs = require('fs');
 
-const input = fs.readFileSync('input.txt').toString().split('\n');
+const input = fs.readFileSync('sample.txt').toString().split('\n');
 
 const directions = { VERTICAL: 'vertical', HORIZONTAL: 'horizontal' };
 const SAND_ORIGIN = { x: 500, y: 0 };
@@ -267,10 +267,14 @@ function partTwo() {
 
   grid.setSpawner(sandSpawner);
 
-  while (!grid.toppedUp) {
+  const intervalId = setInterval(() => {
     grid.dropSand();
-    grid.printLog();
-  }
+    grid.print();
+
+    if (grid.toppedUp) {
+      clearInterval(intervalId);
+    }
+  }, 100);
 }
 
 partTwo();
