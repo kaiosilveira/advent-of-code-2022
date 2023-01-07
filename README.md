@@ -53,24 +53,34 @@ Each `day-n` project look similar, containing:
 
 The table below contains the solutions for all challenges solved so far.
 
-| day | title                       | implementation   | docs for part I | docs for part II |
-| --- | --------------------------- | ---------------- | --------------- | ---------------- |
-| #1  | Calorie counting            | [here](./day-01) | ✅              | ✅               |
-| #2  | Rock, paper, scissors ⭐️   | [here](./day-02) | ✅              | ✅               |
-| #3  | Rucksack Reorganization     | [here](./day-03) | ✅              | ✅               |
-| #4  | Camp Cleanup                | [here](./day-04) | ✅              | ✅               |
-| #5  | Supply Stacks ⭐️           | [here](./day-05) | 🚧              | 🚧               |
-| #6  | Tuning Trouble              | [here](./day-06) | 🚧              | 🚧               |
-| #7  | No Space Left On Device ⭐️ | [here](./day-07) | 🚧              | 🚧               |
-| #8  | Treetop Tree House          | [here](./day-08) | 🚧              | 🚧               |
-| #9  | Rope Bridge                 | [here](./day-09) | 🚧              | 🚧               |
-| #10 | Cathode-Ray Tube ⭐️        | [here](./day-10) | 🚧              | 🚧               |
-| #11 | Monkey in the Middle        | [here](./day-11) | 🚧              | 🚧               |
-| #12 | Hill Climbing Algorithm     | [here](./day-12) | 🚧              | 🚧               |
-| #13 | Distress Signal             | [here](./day-13) | 🚧              | 🚧               |
-| #14 | Regolith Reservoir          | [here](./day-14) | ❌              | ❌               |
+| day | title                    | implementation   | part I | part II |
+| --- | ------------------------ | ---------------- | ------ | ------- |
+| #1  | Calorie counting         | [here](./day-01) | ✅     | ✅      |
+| #2  | Rock, paper, scissors    | [here](./day-02) | ✅     | ✅      |
+| #3  | Rucksack Reorganization  | [here](./day-03) | ✅     | ✅      |
+| #4  | Camp Cleanup             | [here](./day-04) | ✅     | ✅      |
+| #5  | Supply Stacks            | [here](./day-05) | 🚧     | 🚧      |
+| #6  | Tuning Trouble           | [here](./day-06) | 🚧     | 🚧      |
+| #7  | No Space Left On Device  | [here](./day-07) | 🚧     | 🚧      |
+| #8  | Treetop Tree House       | [here](./day-08) | 🚧     | 🚧      |
+| #9  | Rope Bridge              | [here](./day-09) | 🚧     | 🚧      |
+| #10 | Cathode-Ray Tube         | [here](./day-10) | 🚧     | 🚧      |
+| #11 | Monkey in the Middle     | [here](./day-11) | 🚧     | 🚧      |
+| #12 | Hill Climbing Algorithm  | [here](./day-12) | 🚧     | 🚧      |
+| #13 | Distress Signal          | [here](./day-13) | 🚧     | 🚧      |
+| #14 | Regolith Reservoir       | [here](./day-14) | 🚧     | 🚧      |
+| #15 | Beacon Exclusion Zone    | [here](./day-15) | 🚧     | ❌      |
+| #16 | Proboscidea Volcanium    | [here](./day-16) | ❌     | ❌      |
+| #17 | Pyroclastic Flow         | [here](./day-17) | ❌     | ❌      |
+| #18 | Boiling Boulders         | [here](./day-18) | 🚧     | ❌      |
+| #19 | Not Enough Minerals      | [here](./day-19) | ❌     | ❌      |
+| #20 | Grove Positioning System | [here](./day-20) | ❌     | ❌      |
+| #21 | Monkey Math              | [here](./day-21) | ❌     | ❌      |
+| #22 | Monkey Map               | [here](./day-22) | ❌     | ❌      |
+| #23 | Unstable Diffusion       | [here](./day-23) | ❌     | ❌      |
+| #24 | Blizzard Basin           | [here](./day-24) | ❌     | ❌      |
+| #25 | Full of Hot Air          | [here](./day-25) | ❌     | ❌      |
 
-- ✅ = **done** / **stable**
-- 🚧 = **WIP**
-- ❌ = **Not yet available**
-- ⭐️ = **One of my favorites**
+- ✅ = **solved and documented**
+- 🚧 = **solved, but without documentation**
+- ❌ = **Not solved yet**
