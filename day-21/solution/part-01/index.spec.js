@@ -1,4 +1,4 @@
-const { resolveExpressionFor } = require('.');
+const { partOne, resolveExpressionFor } = require('.');
 
 describe('resolveExpressionFor', () => {
   it('should return the resolved value of an expression if that is the case', () => {
@@ -19,5 +19,31 @@ describe('resolveExpressionFor', () => {
     const result = resolveExpressionFor(monkey1, yells);
 
     expect(result).toEqual(7);
+  });
+});
+
+describe('part 1', () => {
+  it('should match the expected output', () => {
+    const input = [
+      'root: pppw + sjmn',
+      'dbpl: 5',
+      'cczh: sllz + lgvd',
+      'zczc: 2',
+      'ptdq: humn - dvpt',
+      'dvpt: 3',
+      'lfqf: 4',
+      'humn: 5',
+      'ljgn: 2',
+      'sjmn: drzm * dbpl',
+      'sllz: 4',
+      'pppw: cczh / lfqf',
+      'lgvd: ljgn * ptdq',
+      'drzm: hmdt - zczc',
+      'hmdt: 32',
+    ];
+
+    const result = partOne(input);
+
+    expect(result).toEqual(152);
   });
 });
